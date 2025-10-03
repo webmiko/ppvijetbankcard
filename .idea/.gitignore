@@ -1,7 +1,0 @@
-# Игнорируемые файлы по умолчанию
-/shelf/
-/workspace.xml
-.idea/
-*.pyc
-# HTTP-клиент на основе редактора
-/httpRequests/
