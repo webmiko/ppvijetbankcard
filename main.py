@@ -1,5 +1,5 @@
 from src.masks import get_mask_account, get_mask_card_number
-from src.widget import mask_account_card
+from src.widget import mask_account_card, get_date
 
 
 def demo() -> None:
@@ -51,6 +51,29 @@ def demo() -> None:
             print()
         except ValueError as err:
             print(f"  Ошибка для '{test_string}': {err}")
+            print()
+
+    print("\n" + "=" * 60)
+    print("Демонстрация функции get_date:")
+    print("=" * 60)
+
+    # Примеры для функции get_date
+    test_dates = [
+        "2024-03-11T02:26:18.671407",
+        "2023-12-25T15:30:45.123456",
+        "2024-01-01T00:00:00",
+        "2024-02-29T12:00:00.000000",
+        "неверная дата"
+    ]
+
+    for test_date in test_dates:
+        try:
+            result = get_date(test_date)
+            print(f"  {test_date}")
+            print(f"  -> {result}")
+            print()
+        except ValueError as err:
+            print(f"  Ошибка для '{test_date}': {err}")
             print()
 
 

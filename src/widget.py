@@ -1,4 +1,5 @@
 from .masks import get_mask_card_number, get_mask_account
+from datetime import datetime
 
 
 def mask_account_card(input_string: str) -> str:
@@ -35,3 +36,28 @@ def mask_account_card(input_string: str) -> str:
         card_type = " ".join(card_parts[:-1])
         masked_number = get_mask_card_number(card_number)
         return f"{card_type} {masked_number}"
+
+
+def get_date(date_string: str) -> str:
+    """
+    Преобразует дату из ISO формата в формат ДД.ММ.ГГГГ.
+
+    Args:
+        date_string: Строка с датой в формате "2024-03-11T02:26:18.671407"
+
+    Returns:
+        Строка с датой в формате "11.03.2024"
+
+    Examples:
+        >>> get_date("2024-03-11T02:26:18.671407")
+        "11.03.2024"
+        >>> get_date("2023-12-25T15:30:45.123456")
+        "25.12.2023"
+    """
+    try:
+        # Парсим дату из ISO формата
+        date_time = datetime.fromisoformat(date_string)
+        # Форматируем в нужный формат ДД.ММ.ГГГГ
+        return date_time.strftime("%d.%m.%Y")
+    except ValueError as e:
+        raise ValueError(f"Неверный формат даты: {e}")
