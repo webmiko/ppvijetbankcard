@@ -18,20 +18,20 @@ def mask_account_card(input_string: str) -> str:
         "Счет **4305"
     """
     # Разделяем строку на части
-    parts = input_string.split()
+    card_parts = input_string.split()
 
-    if len(parts) < 2:
+    if len(card_parts) < 2:
         raise ValueError("Неверный формат входной строки")
 
     # Определяем тип (карта или счет)
-    if parts[0] == "Счет":
+    if card_parts[0] == "Счет":
         # Для счета берем все части кроме первой как номер
-        account_number = "".join(parts[1:])
+        account_number = "".join(card_parts[1:])
         masked_number = get_mask_account(account_number)
         return f"Счет {masked_number}"
     else:
         # Для карты берем последнюю часть как номер карты
-        card_number = parts[-1]
-        card_type = " ".join(parts[:-1])
+        card_number = card_parts[-1]
+        card_type = " ".join(card_parts[:-1])
         masked_number = get_mask_card_number(card_number)
         return f"{card_type} {masked_number}"
