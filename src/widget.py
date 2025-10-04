@@ -55,7 +55,7 @@ def get_date(date_string: str) -> str:
         "25.12.2023"
     """
     try:
-        # Парсим дату из ISO формата
+        # Преобразуем дату из ISO формата
         date_time = datetime.fromisoformat(date_string)
         # Форматируем в нужный формат ДД.ММ.ГГГГ
         return date_time.strftime("%d.%m.%Y")

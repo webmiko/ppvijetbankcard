@@ -7,10 +7,7 @@ def _format_in_blocks(text: str, block_size: int = 4) -> str:
     """Возвращает строку, разбитую пробелами на блоки по block_size символов."""
     if not text:
         return text
-    return " ".join(
-        text[i : i + block_size]
-        for i in range(0, len(text), block_size)
-    )
+    return " ".join(text[i : i + block_size] for i in range(0, len(text), block_size))
 
 
 def get_mask_card_number(card_number: int | str) -> str:
