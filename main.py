@@ -1,4 +1,5 @@
 from src.masks import get_mask_account, get_mask_card_number
+from src.widget import mask_account_card
 
 
 def demo() -> None:
@@ -27,6 +28,30 @@ def demo() -> None:
             print(f"  {an} -> {get_mask_account(an)}")
         except ValueError as err:
             print(f"  Ошибка для '{an}': {err}")
+
+    print("\n" + "=" * 60)
+    print("Демонстрация новой функции mask_account_card:")
+    print("=" * 60)
+
+    # Примеры для новой функции
+    test_strings = [
+        "Visa Platinum 7000792289606361",
+        "Maestro 7000792289606361",
+        "Mastercard 5555555555554444",
+        "Счет 73654108430135874305",
+        "Счет 1234 5678 9012 3456",
+        "American Express 378282246310005"
+    ]
+
+    for test_string in test_strings:
+        try:
+            result = mask_account_card(test_string)
+            print(f"  {test_string}")
+            print(f"  -> {result}")
+            print()
+        except ValueError as err:
+            print(f"  Ошибка для '{test_string}': {err}")
+            print()
 
 
 if __name__ == "__main__":
