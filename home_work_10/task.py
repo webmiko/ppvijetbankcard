@@ -1,4 +1,4 @@
-def text_revers(text: str) -> str:
+def text_reversе(text: str) -> str:
     """
     Функция для переворота текста
     :param text:
