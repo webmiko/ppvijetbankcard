@@ -1,4 +1,11 @@
-from .widget import get_date, mask_account_card
+import os
+import sys
+from datetime import datetime
+
+# Добавляем родительскую директорию в sys.path для импорта модуля widget
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.widget import get_date
 
 
 def filter_by_state(list_of_dicts: list, state: str = "EXECUTED") -> list:
@@ -26,4 +33,5 @@ def sort_by_date(list_of_dicts: list, reverse_order: bool = True) -> list:
     Returns:
         Новый список, отсортированный по дате
     """
-    return sorted(list_of_dicts, key=lambda x: x["date"], reverse=reverse_order)
+    # Сортировка с использованием преобразования строки даты в объект datetime
+    return sorted(list_of_dicts, key=lambda x: datetime.fromisoformat(x["date"]), reverse=reverse_order)
