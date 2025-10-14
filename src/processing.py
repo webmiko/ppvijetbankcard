@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from .widget import get_date
+from src.widget import get_date
 
 
 def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
