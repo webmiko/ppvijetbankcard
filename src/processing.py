@@ -30,8 +30,4 @@ def sort_by_date(transactions: List[Dict[str, Any]], is_reverse_order: bool = Tr
     """
     # Сортировка с использованием преобразования строки даты в объект datetime
     # Явно указываем тип данных для ключа сортировки, чтобы улучшить читаемость
-    return sorted(
-        transactions,
-        key=lambda tx: datetime.fromisoformat(tx["date"]),
-        reverse=is_reverse_order
-    )
+    return sorted(transactions, key=lambda tx: datetime.fromisoformat(tx["date"]), reverse=is_reverse_order)
