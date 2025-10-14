@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
+from .widget import get_date
+
 
 def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
     """
@@ -26,8 +28,11 @@ def sort_by_date(transactions: List[Dict[str, Any]], is_reverse_order: bool = Tr
         is_reverse_order: Порядок сортировки (по умолчанию True - по убыванию)
 
     Returns:
-        Новый список, отсортированный по дате
+        Новый список, отсортированный по дате c возможностью обратного порядка из функции get_date
     """
     # Сортировка с использованием преобразования строки даты в объект datetime
     # Явно указываем тип данных для ключа сортировки, чтобы улучшить читаемость
-    return sorted(transactions, key=lambda tx: datetime.fromisoformat(tx["date"]), reverse=is_reverse_order)
+
+    return sorted(
+        transactions, key=lambda tx: datetime.strptime(get_date(tx["date"]), "%d.%m.%Y"), reverse=is_reverse_order
+    )
