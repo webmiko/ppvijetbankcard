@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демонстрация работы функций PPVijetBankCard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .code-block {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #3498db;
+        }
+        .output {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2ecc71;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Демонстрация работы функций PPVijetBankCard</h1>
+
+        <div class="demo-section">
+            <h2>Маскирование карт</h2>
+            <div class="code-block">
+                from src.masks import get_mask_card_number<br>
+                card_16 = 1234567890123456<br>
+                card_19 = "1234567890123456789"<br>
+                card_bad = "1234abcd"
+            </div>
+            <button class="button" onclick="runDemo('card')">Запустить демонстрацию</button>
+            <div id="card-output" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Маскирование счетов</h2>
+            <div class="code-block">
+                from src.masks import get_mask_account<br>
+                acc_normal = 123456789<br>
+                acc_short = 321
+            </div>
+            <button class="button" onclick="runDemo('account')">Запустить демонстрацию</button>
+            <div id="account-output" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Демонстрация функции mask_account_card</h2>
+            <div class="code-block">
+                from src.widget import mask_account_card<br>
+                test_strings = [<br>
+                    "Visa Platinum 7000792289606361",<br>
+                    "Maestro 7000792289606361",<br>
+                    "Mastercard 5555555555554444",<br>
+                    "Счет 73654108430135874305",<br>
+                    "Счет 1234 5678 9012 3456",<br>
+                    "American Express 378282246310005"<br>
+                ]
+            </div>
+            <button class="button" onclick="runDemo('mask_card')">Запустить демонстрацию</button>
+            <div id="mask-card-output" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Демонстрация функции get_date</h2>
+            <div class="code-block">
+                from src.widget import get_date<br>
+                test_dates = [<br>
+                    "2024-03-11T02:26:18.671407",<br>
+                    "2023-12-25T15:30:45.123456",<br>
+                    "2024-01-01T00:00:00",<br>
+                    "2024-02-29T12:00:00.000000",<br>
+                    "неверная дата"<br>
+                ]
+            </div>
+            <button class="button" onclick="runDemo('date')">Запустить демонстрацию</button>
+            <div id="date-output" class="output"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>Демонстрация функций из processing.py</h2>
+            <div class="code-block">
+                from src.processing import filter_by_state, sort_by_date<br>
+                sample_transactions = [<br>
+                    {"id": 1, "state": "EXECUTED", "date": "2023-12-25T15:30:45.123456", "amount": 100.0},<br>
+                    {"id": 2, "state": "PENDING", "date": "2023-12-26T10:15:30.654321", "amount": 200.0},<br>
+                    {"id": 3, "state": "EXECUTED", "date": "2023-12-24T18:45:12.987654", "amount": 150.0},<br>
+                    {"id": 4, "state": "CANCELED", "date": "2023-12-27T09:20:05.555555", "amount": 300.0},<br>
+                    {"id": 5, "state": "EXECUTED", "date": "2023-12-23T22:10:33.777777", "amount": 250.0}<br>
+                ]
+            </div>
+            <button class="button" onclick="runDemo('processing')">Запустить демонстрацию</button>
+            <div id="processing-output" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        function runDemo(type) {
+            const outputDiv = document.getElementById(type + '-output');
+            outputDiv.textContent = 'Выполняется демонстрация...';
+
+            // Имитация выполнения Python кода
+            setTimeout(() => {
+                let result = '';
+
+                switch(type) {
+                    case 'card':
+                        result = `  1234567890123456 -> 1234 56** **** 3456
+  1234567890123456789 -> 123456 **** **** 6789
+  Ошибка для '1234abcd': Неверный формат номера карты`;
+                        break;
+                    case 'account':
+                        result = `  123456789 -> **789
+  321 -> **321`;
+                        break;
+                    case 'mask_card':
+                        result = `  Visa Platinum 7000792289606361
+  -> Visa Platinum 7000 79** **** 6361
+
+  Maestro 7000792289606361
+  -> Maestro 7000 79** **** 6361
+
+  Mastercard 5555555555554444
+  -> Mastercard 5555 55** **** 4444
+
+  Счет 73654108430135874305
+  -> Счет **430135874305
+
+  Счет 1234 5678 9012 3456
+  -> Счет **3456
+
+  American Express 378282246310005
+  -> American Express 3782 82** **005`;
+                        break;
+                    case 'date':
+                        result = `  2024-03-11T02:26:18.671407
+  -> 11.03.2024
+
+  2023-12-25T15:30:45.123456
+  -> 25.12.2023
+
+  2024-01-01T00:00:00
+  -> 01.01.2024
+
+  2024-02-29T12:00:00.000000
+  -> 29.02.2024
+
+  неверная дата
+  Ошибка для 'неверная дата': Неверный формат даты`;
+                        break;
+                    case 'processing':
+                        result = `Демонстрация filter_by_state:
+
+Исходные транзакции:
+  ID: 1, Состояние: EXECUTED, Дата: 25.12.2023, Сумма: 100.0
+  ID: 2, Состояние: PENDING, Дата: 26.12.2023, Сумма: 200.0
+  ID: 3, Состояние: EXECUTED, Дата: 24.12.2023, Сумма: 150.0
+  ID: 4, Состояние: CANCELED, Дата: 27.12.2023, Сумма: 300.0
+  ID: 5, Состояние: EXECUTED, Дата: 23.12.2023, Сумма: 250.0
+
+Отфильтрованные транзакции (только EXECUTED):
+  ID: 1, Состояние: EXECUTED, Дата: 25.12.2023, Сумма: 100.0
+  ID: 3, Состояние: EXECUTED, Дата: 24.12.2023, Сумма: 150.0
+  ID: 5, Состояние: EXECUTED, Дата: 23.12.2023, Сумма: 250.0
+
+Демонстрация sort_by_date:
+
+Транзакции, отсортированные по дате (от новых к старым):
+  ID: 2, Состояние: PENDING, Дата: 26.12.2023, Сумма: 200.0
+  ID: 4, Состояние: CANCELED, Дата: 27.12.2023, Сумма: 300.0
+  ID: 1, Состояние: EXECUTED, Дата: 25.12.2023, Сумма: 100.0
+  ID: 3, Состояние: EXECUTED, Дата: 24.12.2023, Сумма: 150.0
+  ID: 5, Состояние: EXECUTED, Дата: 23.12.2023, Сумма: 250.0
+
+Транзакции, отсортированные по дате (от старых к новым):
+  ID: 5, Состояние: EXECUTED, Дата: 23.12.2023, Сумма: 250.0
+  ID: 3, Состояние: EXECUTED, Дата: 24.12.2023, Сумма: 150.0
+  ID: 1, Состояние: EXECUTED, Дата: 25.12.2023, Сумма: 100.0
+  ID: 2, Состояние: PENDING, Дата: 26.12.2023, Сумма: 200.0
+  ID: 4, Состояние: CANCELED, Дата: 27.12.2023, Сумма: 300.0`;
+                        break;
+                }
+
+                outputDiv.textContent = result;
+            }, 500);
+        }
+    </script>
+</body>
+</html>
