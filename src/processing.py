@@ -1,30 +1,37 @@
 from datetime import datetime
+from typing import Any, Dict, List
 
 
-def filter_by_state(list_of_dicts: list, state: str = "EXECUTED") -> list:
+def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
     """
     Фильтрует список словарей по значению ключа 'state'.
 
     Args:
-        list_of_dicts: Список словарей для фильтрации
+        transactions: Список словарей для фильтрации
         state: Значение состояния для фильтрации (по умолчанию 'EXECUTED')
 
     Returns:
         Новый список, содержащий только словари с указанным значением состояния
     """
-    return [item for item in list_of_dicts if item.get("state") == state]
+    # Используем .get() для безопасного доступа к ключу, чтобы избежать KeyError
+    return [tx for tx in transactions if tx.get("state") == state]
 
 
-def sort_by_date(list_of_dicts: list, is_reverse: bool = True) -> list:
+def sort_by_date(transactions: List[Dict[str, Any]], is_reverse_order: bool = True) -> List[Dict[str, Any]]:
     """
     Сортирует список словарей по ключу 'date' в формате ISO.
 
     Args:
-        list_of_dicts: Список словарей, содержащих ключи 'date'
-        is_reverse: Порядок сортировки (по умолчанию True - по убыванию)
+        transactions: Список словарей, содержащих ключи 'date'
+        is_reverse_order: Порядок сортировки (по умолчанию True - по убыванию)
 
     Returns:
         Новый список, отсортированный по дате
     """
     # Сортировка с использованием преобразования строки даты в объект datetime
-    return sorted(list_of_dicts, key=lambda x: datetime.fromisoformat(x["date"]), reverse=is_reverse)
+    # Явно указываем тип данных для ключа сортировки, чтобы улучшить читаемость
+    return sorted(
+        transactions,
+        key=lambda tx: datetime.fromisoformat(tx["date"]),
+        reverse=is_reverse_order
+    )
