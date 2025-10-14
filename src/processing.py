@@ -1,11 +1,4 @@
-import os
-import sys
 from datetime import datetime
-
-# Добавляем родительскую директорию в sys.path для импорта модуля widget
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from src.widget import get_date
 
 
 def filter_by_state(list_of_dicts: list, state: str = "EXECUTED") -> list:
