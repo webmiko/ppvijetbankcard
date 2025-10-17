@@ -10,6 +10,10 @@ requires-python = ">=3.13"
 dependencies = [
 ]
 
+[project.scripts]
+lint = "flake8 . && mypy . && black . && isort ."
+lint-src = "flake8 src && mypy src && black src && isort src"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

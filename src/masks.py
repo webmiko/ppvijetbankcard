@@ -1,9 +1,9 @@
-def _only_digits(value: str) -> bool:
+def only_digits(value: str) -> bool:
     """Возвращает True, если строка состоит только из цифр."""
     return value.isdigit()
 
 
-def _format_in_blocks(text: str, block_size: int = 4) -> str:
+def format_in_blocks(text: str, block_size: int = 4) -> str:
     """Возвращает строку, разбитую пробелами на блоки по block_size символов."""
     if not text:
         return text
@@ -28,7 +28,7 @@ def get_mask_card_number(card_number: int | str) -> str:
     """
     card_str = str(card_number).strip()
 
-    if not _only_digits(card_str):
+    if not only_digits(card_str):
         raise ValueError("Номер карты должен содержать только цифры")
 
     length = len(card_str)
@@ -47,7 +47,7 @@ def get_mask_card_number(card_number: int | str) -> str:
         masked_raw = f"{first6}{masked_middle}{last4}"
 
     # Возвращаем строку, разбитую пробелами каждые 4 символа
-    return _format_in_blocks(masked_raw)
+    return format_in_blocks(masked_raw)
 
 
 def get_mask_account(account_number: int | str) -> str:
@@ -65,7 +65,7 @@ def get_mask_account(account_number: int | str) -> str:
     """
     acc_str = str(account_number).strip()
 
-    if not _only_digits(acc_str):
+    if not only_digits(acc_str):
         raise ValueError("Номер счёта должен содержать только цифры")
 
     tail = acc_str[-4:] if len(acc_str) >= 4 else acc_str
