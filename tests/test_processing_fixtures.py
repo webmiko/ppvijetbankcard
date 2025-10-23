@@ -1,33 +1,32 @@
 from typing import Any, Dict, List
 
+import pytest
+
 from src.processing import filter_by_state, sort_by_date
 
 
 class TestFilterByStateFixtures:
     """Тесты для функции filter_by_state с использованием фикстур."""
 
-    def test_filter_by_state_default(self, sample_transactions: List[Dict[str, Any]]) -> None:
-        """Проверка фильтрации по состоянию EXECUTED (по умолчанию)."""
-        result = filter_by_state(sample_transactions)
-        assert len(result) == 3
-        assert result[0]["id"] == 1
-        assert result[1]["id"] == 3
-        assert result[2]["id"] == 5
-
-    def test_filter_by_state_custom(self, sample_transactions: List[Dict[str, Any]]) -> None:
-        """Проверка фильтрации по пользовательскому состоянию."""
-        result = filter_by_state(sample_transactions, "PENDING")
-        assert len(result) == 1
-        assert result[0]["id"] == 2
+    @pytest.mark.parametrize(
+        "state, expected_ids",
+        [
+            ("EXECUTED", [1, 3, 5]),
+            ("PENDING", [2]),
+            ("CANCELED", [4]),
+            ("NONEXISTENT", []),
+        ],
+    )
+    def test_filter_by_state(
+        self, sample_transactions: List[Dict[str, Any]], state: str, expected_ids: List[int]
+    ) -> None:
+        """Проверка фильтрации по различным состояниям."""
+        result = filter_by_state(sample_transactions, state)
+        assert [t["id"] for t in result] == expected_ids
 
     def test_filter_by_state_empty(self) -> None:
         """Проверка фильтрации пустого списка."""
         assert filter_by_state([]) == []
-
-    def test_filter_by_state_no_match(self, sample_transactions: List[Dict[str, Any]]) -> None:
-        """Проверка фильтрации без совпадений."""
-        result = filter_by_state(sample_transactions, "NONEXISTENT")
-        assert result == []
 
     def test_filter_by_state_missing_state_key(self) -> None:
         """Проверка обработки транзакций без ключа state."""
@@ -45,23 +44,19 @@ class TestFilterByStateFixtures:
 class TestSortByDateFixtures:
     """Тесты для функции sort_by_date с использованием фикстур."""
 
-    def test_sort_by_date_descending(self, sample_transactions: List[Dict[str, Any]]) -> None:
-        """Проверка сортировки по убыванию (по умолчанию)."""
-        result = sort_by_date(sample_transactions)
-        assert result[0]["id"] == 4  # 27 декабря
-        assert result[1]["id"] == 2  # 26 декабря
-        assert result[2]["id"] == 1  # 25 декабря
-        assert result[3]["id"] == 3  # 24 декабря
-        assert result[4]["id"] == 5  # 23 декабря
-
-    def test_sort_by_date_ascending(self, sample_transactions: List[Dict[str, Any]]) -> None:
-        """Проверка сортировки по возрастанию."""
-        result = sort_by_date(sample_transactions, is_reverse_order=False)
-        assert result[0]["id"] == 5  # 23 декабря
-        assert result[1]["id"] == 3  # 24 декабря
-        assert result[2]["id"] == 1  # 25 декабря
-        assert result[3]["id"] == 2  # 26 декабря
-        assert result[4]["id"] == 4  # 27 декабря
+    @pytest.mark.parametrize(
+        "is_reverse_order, expected_ids",
+        [
+            (True, [4, 2, 1, 3, 5]),  # по убыванию (по умолчанию)
+            (False, [5, 3, 1, 2, 4]),  # по возрастанию
+        ],
+    )
+    def test_sort_by_date(
+        self, sample_transactions: List[Dict[str, Any]], is_reverse_order: bool, expected_ids: List[int]
+    ) -> None:
+        """Проверка сортировки по дате в различных направлениях."""
+        result = sort_by_date(sample_transactions, is_reverse_order=is_reverse_order)
+        assert [t["id"] for t in result] == expected_ids
 
     def test_sort_by_date_empty(self) -> None:
         """Проверка сортировки пустого списка."""

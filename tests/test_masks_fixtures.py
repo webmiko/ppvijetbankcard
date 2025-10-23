@@ -48,60 +48,55 @@ class TestFormatInBlocksFixtures:
 class TestGetMaskCardNumberFixtures:
     """Тесты для функции get_mask_card_number с использованием фикстур."""
 
-    def test_mask_card_number_16_digits(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка маскирования 16-значного номера карты."""
-        assert get_mask_card_number(sample_card_numbers["valid_16"]) == "1234 56** **** 3456"
+    @pytest.mark.parametrize(
+        "card_key, expected",
+        [
+            ("valid_16", "1234 56** **** 3456"),
+            ("valid_13", "1234 56** *012 3"),
+            ("valid_19", "1234 56** **** ***6 789"),
+            ("valid_16_int", "1234 56** **** 3456"),
+            ("with_spaces", "1234 56** **** 3456"),
+        ],
+    )
+    def test_mask_card_number_valid_cases(
+        self, sample_card_numbers: Dict[str, Any], card_key: str, expected: str
+    ) -> None:
+        """Проверка маскирования номеров карт в различных валидных случаях."""
+        assert get_mask_card_number(sample_card_numbers[card_key]) == expected
 
-    def test_mask_card_number_13_digits(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка маскирования 13-значного номера карты."""
-        assert get_mask_card_number(sample_card_numbers["valid_13"]) == "1234 56** *012 3"
-
-    def test_mask_card_number_19_digits(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка маскирования 19-значного номера карты."""
-        assert get_mask_card_number(sample_card_numbers["valid_19"]) == "1234 56** **** ***6 789"
-
-    def test_mask_card_number_int_input(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка работы с числовым вводом."""
-        assert get_mask_card_number(sample_card_numbers["valid_16_int"]) == "1234 56** **** 3456"
-
-    def test_mask_card_number_with_spaces(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка работы с номером карты, содержащим пробелы."""
-        assert get_mask_card_number(sample_card_numbers["with_spaces"]) == "1234 56** **** 3456"
-
-    def test_mask_card_number_invalid_chars(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка вызова исключения при недопустимых символах."""
-        with pytest.raises(ValueError, match="Номер карты должен содержать только цифры"):
-            get_mask_card_number(sample_card_numbers["invalid_chars"])
-
-    def test_mask_card_number_too_short(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка вызова исключения при слишком коротком номере."""
-        with pytest.raises(ValueError, match="Длина номера карты должна быть от 13 до 19 цифр"):
-            get_mask_card_number(sample_card_numbers["too_short"])
-
-    def test_mask_card_number_too_long(self, sample_card_numbers: Dict[str, Any]) -> None:
-        """Проверка вызова исключения при слишком длинном номере."""
-        with pytest.raises(ValueError, match="Длина номера карты должна быть от 13 до 19 цифр"):
-            get_mask_card_number(sample_card_numbers["too_long"])
+    @pytest.mark.parametrize(
+        "card_key, error_message",
+        [
+            ("invalid_chars", "Номер карты должен содержать только цифры"),
+            ("too_short", "Длина номера карты должна быть от 13 до 19 цифр"),
+            ("too_long", "Длина номера карты должна быть от 13 до 19 цифр"),
+        ],
+    )
+    def test_mask_card_number_invalid_cases(
+        self, sample_card_numbers: Dict[str, Any], card_key: str, error_message: str
+    ) -> None:
+        """Проверка вызова исключения при недопустимых номерах карт."""
+        with pytest.raises(ValueError, match=error_message):
+            get_mask_card_number(sample_card_numbers[card_key])
 
 
 class TestGetMaskAccountFixtures:
     """Тесты для функции get_mask_account с использованием фикстур."""
 
-    def test_mask_account_normal(self, sample_account_numbers: Dict[str, Any]) -> None:
-        """Проверка маскирования стандартного номера счета."""
-        assert get_mask_account(sample_account_numbers["valid"]) == "**7890"
-
-    def test_mask_account_short(self, sample_account_numbers: Dict[str, Any]) -> None:
-        """Проверка маскирования короткого номера счета."""
-        assert get_mask_account(sample_account_numbers["short"]) == "**123"
-
-    def test_mask_account_int_input(self, sample_account_numbers: Dict[str, Any]) -> None:
-        """Проверка работы с числовым вводом."""
-        assert get_mask_account(sample_account_numbers["valid_int"]) == "**7890"
-
-    def test_mask_account_with_spaces(self, sample_account_numbers: Dict[str, Any]) -> None:
-        """Проверка работы с номером счета, содержащим пробелы."""
-        assert get_mask_account(sample_account_numbers["with_spaces"]) == "**7890"
+    @pytest.mark.parametrize(
+        "account_key, expected",
+        [
+            ("valid", "**7890"),
+            ("short", "**123"),
+            ("valid_int", "**7890"),
+            ("with_spaces", "**7890"),
+        ],
+    )
+    def test_mask_account_valid_cases(
+        self, sample_account_numbers: Dict[str, Any], account_key: str, expected: str
+    ) -> None:
+        """Проверка маскирования номеров счетов в различных валидных случаях."""
+        assert get_mask_account(sample_account_numbers[account_key]) == expected
 
     def test_mask_account_invalid_chars(self, sample_account_numbers: Dict[str, Any]) -> None:
         """Проверка вызова исключения при недопустимых символах."""
