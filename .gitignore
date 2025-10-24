@@ -189,6 +189,7 @@ cython_debug/
 .idea/
 *.pyc
 *.yaml
+.DS_Store
 
 # Abstra
 #   Abstra is an AI-powered process automation framework.
