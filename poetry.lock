@@ -198,14 +198,14 @@ pyflakes = ">=3.4.0,<3.5.0"
 
 [[package]]
 name = "isort"
-version = "6.1.0"
+version = "7.0.0"
 description = "A Python utility / library to sort Python imports."
 optional = false
-python-versions = ">=3.9.0"
-groups = ["lint"]
+python-versions = ">=3.10.0"
+groups = ["main", "lint"]
 files = [
-    {file = "isort-6.1.0-py3-none-any.whl", hash = "sha256:58d8927ecce74e5087aef019f778d4081a3b6c98f15a80ba35782ca8a2097784"},
-    {file = "isort-6.1.0.tar.gz", hash = "sha256:9b8f96a14cfee0677e78e941ff62f03769a06d412aabb9e2a90487b3b7e8d481"},
+    {file = "isort-7.0.0-py3-none-any.whl", hash = "sha256:1bcabac8bc3c36c7fb7b98a76c8abb18e0f841a3ba81decac7691008592499c1"},
+    {file = "isort-7.0.0.tar.gz", hash = "sha256:5513527951aadb3ac4292a41a16cbc50dd1642432f5e8c20057d414bdafb4187"},
 ]
 
 [package.extras]
@@ -363,14 +363,14 @@ files = [
 
 [[package]]
 name = "pytokens"
-version = "0.1.10"
-description = "A Fast, spec compliant Python 3.12+ tokenizer that runs on older Pythons."
+version = "0.2.0"
+description = "A Fast, spec compliant Python 3.13+ tokenizer that runs on older Pythons."
 optional = false
 python-versions = ">=3.8"
 groups = ["lint"]
 files = [
-    {file = "pytokens-0.1.10-py3-none-any.whl", hash = "sha256:db7b72284e480e69fb085d9f251f66b3d2df8b7166059261258ff35f50fb711b"},
-    {file = "pytokens-0.1.10.tar.gz", hash = "sha256:c9a4bfa0be1d26aebce03e6884ba454e842f186a59ea43a6d3b25af58223c044"},
+    {file = "pytokens-0.2.0-py3-none-any.whl", hash = "sha256:74d4b318c67f4295c13782ddd9abcb7e297ec5630ad060eb90abf7ebbefe59f8"},
+    {file = "pytokens-0.2.0.tar.gz", hash = "sha256:532d6421364e5869ea57a9523bf385f02586d4662acbcc0342afd69511b4dd43"},
 ]
 
 [package.extras]
@@ -391,4 +391,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "8e5e901489b57f459b65547b404e6093ab987346dcf11d9eb98825aa2b9a3e8b"
+content-hash = "0c75e7396fab4cd9af116fc236e38306c52ae2d8a832cee623b566a34b3a999c"
