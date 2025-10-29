@@ -229,6 +229,9 @@ PPVijetBankCard/
 │   ├── masks.py          # Базовые функции маскировки
 │   ├── widget.py         # Расширенные функции
 │   └── processing.py     # Функции обработки данных
+├── generators/
+│   ├── __init__.py       # Экспорт функций генераторов
+│   └── generators.py     # Генераторы для обработки данных
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py       # Общие фикстуры для тестов
@@ -237,7 +240,9 @@ PPVijetBankCard/
 │   ├── test_processing.py # Тесты функций обработки
 │   ├── test_processing_fixtures.py  # Параметризованные тесты обработки
 │   ├── test_widget.py    # Тесты форматирования данных
-│   └── test_widget_fixtures.py  # Параметризованные тесты форматирования
+│   ├── test_widget_fixtures.py  # Параметризованные тесты форматирования
+│   ├── test_generators.py     # Тесты функций-генераторов
+│   └── test_generators_fixtures.py  # Параметризованные тесты генераторов
 ├── htmlcov/              # Отчет о покрытии кода тестами
 │   ├── index.html        # Главный файл отчета
 │   └── ...               # Другие файлы отчета
@@ -254,6 +259,7 @@ PPVijetBankCard/
 | `src/masks.py` | Базовые функции маскировки карт и счетов |
 | `src/widget.py` | Умные функции для работы со строками и датами |
 | `src/processing.py` | Функции для обработки и фильтрации транзакций |
+| `generators/generators.py` | Генераторы для обработки данных транзакций и генерации номеров карт |
 | `tests/conftest.py` | Общие фикстуры для тестов |
 | `tests/test_masks.py` | Базовые тесты функций маскировки |
 | `tests/test_masks_fixtures.py` | Параметризованные тесты функций маскировки |
@@ -261,11 +267,68 @@ PPVijetBankCard/
 | `tests/test_processing_fixtures.py` | Параметризованные тесты функций обработки |
 | `tests/test_widget.py` | Тесты форматирования данных и дат |
 | `tests/test_widget_fixtures.py` | Параметризованные тесты форматирования |
+| `tests/test_generators.py` | Тесты функций-генераторов |
+| `tests/test_generators_fixtures.py` | Параметризованные тесты функций-генераторов |
 | `main.py` | Демонстрационная программа |
 
 ## Обработка транзакций
 
 Модуль `processing.py` помогает работать с финансовыми транзакциями: фильтровать, сортировать и форматировать их.
+
+## Генераторы для обработки данных
+
+Модуль `generators` предоставляет эффективные инструменты для работы с большими объемами данных транзакций с помощью генераторов Python. Эти генераторы позволяют финансовым аналитикам быстро и удобно находить нужную информацию о транзакциях и проводить анализ данных.
+
+### Фильтрация транзакций по валюте
+
+```python
+from generators import filter_by_currency
+
+# Фильтрация транзакций по USD
+usd_transactions = filter_by_currency(transactions, "USD")
+for transaction in usd_transactions:
+    print(transaction["description"], transaction["operationAmount"]["amount"])
+```
+
+### Получение описаний транзакций
+
+```python
+from generators import transaction_descriptions
+
+# Получение всех описаний транзакций
+descriptions = transaction_descriptions(transactions)
+for description in descriptions:
+    print(description)
+```
+
+### Генерация номеров банковских карт
+
+```python
+from generators import card_number_generator
+
+# Генерация номеров карт в заданном диапазоне
+card_numbers = card_number_generator(1, 5)
+for card_number in card_numbers:
+    print(card_number)
+# Вывод:
+# 0000 0000 0000 0001
+# 0000 0000 0000 0002
+# 0000 0000 0000 0003
+# 0000 0000 0000 0004
+# 0000 0000 0000 0005
+
+# Генерация номеров карт в большом диапазоне
+card_numbers = card_number_generator(1000, 1005)
+for card_number in card_numbers:
+    print(card_number)
+# Вывод:
+# 0000 0000 0000 1000
+# 0000 0000 0000 1001
+# 0000 0000 0000 1002
+# 0000 0000 0000 1003
+# 0000 0000 0000 1004
+# 0000 0000 0000 1005
+```
 
 ### Фильтрация и сортировка
 
