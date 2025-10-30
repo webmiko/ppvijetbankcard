@@ -1,7 +1,7 @@
+from generators import card_number_generator, filter_by_currency, transaction_descriptions
 from src.masks import get_mask_account, get_mask_card_number
 from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
-from generators import filter_by_currency, transaction_descriptions, card_number_generator
 
 
 def demo() -> None:
@@ -83,7 +83,7 @@ def demo() -> None:
     print("=" * 60)
 
     # Примеры для функций filter_by_state и sort_by_date
-    sample_transactions = [
+    sample_transactions: list[dict[str, object]] = [
         {"id": 1, "state": "EXECUTED", "date": "2023-12-25T15:30:45.123456", "amount": 100.0},
         {"id": 2, "state": "PENDING", "date": "2023-12-26T10:15:30.654321", "amount": 200.0},
         {"id": 3, "state": "EXECUTED", "date": "2023-12-24T18:45:12.987654", "amount": 150.0},
@@ -94,23 +94,23 @@ def demo() -> None:
     print("\nДемонстрация filter_by_state:")
     print("\nИсходные транзакции:")
     for tx in sample_transactions:
-        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(tx['date'])}, Сумма: {tx['amount']}")
+        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(str(tx['date']))}, Сумма: {tx['amount']}")
 
     filtered_transactions = filter_by_state(sample_transactions)
     print("\nОтфильтрованные транзакции (только EXECUTED):")
     for tx in filtered_transactions:
-        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(tx['date'])}, Сумма: {tx['amount']}")
+        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(str(tx['date']))}, Сумма: {tx['amount']}")
 
     print("\nДемонстрация sort_by_date:")
     sorted_transactions = sort_by_date(sample_transactions)
     print("\nТранзакции, отсортированные по дате (от новых к старым):")
     for tx in sorted_transactions:
-        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(tx['date'])}, Сумма: {tx['amount']}")
+        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(str(tx['date']))}, Сумма: {tx['amount']}")
 
     print("\nТранзакции, отсортированные по дате (от старых к новым):")
     sorted_asc = sort_by_date(sample_transactions, is_reverse_order=False)
     for tx in sorted_asc:
-        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(tx['date'])}, Сумма: {tx['amount']}")
+        print(f"  ID: {tx['id']}, Состояние: {tx['state']}, Дата: {get_date(str(tx['date']))}, Сумма: {tx['amount']}")
 
 
 def demo_generators() -> None:
@@ -126,47 +126,29 @@ def demo_generators() -> None:
             "id": 939719570,
             "state": "EXECUTED",
             "date": "2018-06-30T02:08:58.425572",
-            "operationAmount": {
-                "amount": "9824.07",
-                "currency": {
-                    "name": "USD",
-                    "code": "USD"
-                }
-            },
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
             "description": "Перевод организации",
             "from": "Счет 75106830613657916952",
-            "to": "Счет 11776614605963066702"
+            "to": "Счет 11776614605963066702",
         },
         {
             "id": 142264268,
             "state": "EXECUTED",
             "date": "2019-04-04T23:20:05.206878",
-            "operationAmount": {
-                "amount": "79114.93",
-                "currency": {
-                    "name": "USD",
-                    "code": "USD"
-                }
-            },
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
             "description": "Перевод со счета на счет",
             "from": "Счет 19708645243227258542",
-            "to": "Счет 75651667383060284188"
+            "to": "Счет 75651667383060284188",
         },
         {
             "id": 873106923,
             "state": "EXECUTED",
             "date": "2019-03-23T01:09:46.296404",
-            "operationAmount": {
-                "amount": "43318.34",
-                "currency": {
-                    "name": "руб.",
-                    "code": "RUB"
-                }
-            },
+            "operationAmount": {"amount": "43318.34", "currency": {"name": "руб.", "code": "RUB"}},
             "description": "Перевод со счета на счет",
             "from": "Счет 44812258784861134719",
-            "to": "Счет 74489636417521191160"
-        }
+            "to": "Счет 74489636417521191160",
+        },
     ]
 
     # Демонстрация filter_by_currency
@@ -174,12 +156,18 @@ def demo_generators() -> None:
     print("\nФильтрация транзакций по USD:")
     usd_transactions = list(filter_by_currency(sample_transactions, "USD"))
     for transaction in usd_transactions:
-        print(f"  ID: {transaction['id']}, Описание: {transaction['description']}, Сумма: {transaction['operationAmount']['amount']} {transaction['operationAmount']['currency']['code']}")
+        print(
+            f"  ID: {transaction['id']}, Описание: {transaction['description']}, "
+            f"Сумма: {transaction['operationAmount']['amount']} {transaction['operationAmount']['currency']['code']}"
+        )
 
     print("\nФильтрация транзакций по RUB:")
     rub_transactions = list(filter_by_currency(sample_transactions, "RUB"))
     for transaction in rub_transactions:
-        print(f"  ID: {transaction['id']}, Описание: {transaction['description']}, Сумма: {transaction['operationAmount']['amount']} {transaction['operationAmount']['currency']['code']}")
+        print(
+            f"  ID: {transaction['id']}, Описание: {transaction['description']}, "
+            f"Сумма: {transaction['operationAmount']['amount']} {transaction['operationAmount']['currency']['code']}"
+        )
 
     # Демонстрация transaction_descriptions
     print("\nДемонстрация transaction_descriptions:")
