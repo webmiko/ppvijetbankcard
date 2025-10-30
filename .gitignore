@@ -197,6 +197,9 @@ cython_debug/
 #   Learn more at https://abstra.io/docs
 .abstra/
 
+# Makefile
+Makefile
+
 # Visual Studio Code
 #   Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
 #   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
@@ -217,3 +220,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Homework files
+generators/*.txt
+src/*.txt
