@@ -1,4 +1,5 @@
-from generators import card_number_generator, filter_by_currency, transaction_descriptions
+from generators import (card_number_generator, filter_by_currency, random_card_number_generator,
+                        transaction_descriptions)
 from src.masks import get_mask_account, get_mask_card_number
 from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
@@ -187,6 +188,13 @@ def demo_generators() -> None:
     cards_large = list(card_number_generator(1000, 1005))
     for card in cards_large:
         print(f"  {card}")
+
+    # Демонстрация random_card_number_generator
+    print("\nДемонстрация random_card_number_generator:")
+    print("\nГенерация 5 случайных номеров карт:")
+    random_cards = list(random_card_number_generator(5))
+    for i, card in enumerate(random_cards, 1):
+        print(f"  {i}. {card}")
 
 
 if __name__ == "__main__":

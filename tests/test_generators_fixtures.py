@@ -1,6 +1,7 @@
 import pytest
 
-from generators.generators import card_number_generator, filter_by_currency, transaction_descriptions
+from generators.generators import (card_number_generator, filter_by_currency, random_card_number_generator,
+                                   transaction_descriptions)
 
 # Тестовые данные
 transactions = [
@@ -81,3 +82,27 @@ def test_card_number_generator_parametrized(start: int, end: int, expected_first
     assert len(cards) == end - start + 1
     assert cards[0] == expected_first
     assert cards[-1] == expected_last
+
+
+# Параметризованные тесты для random_card_number_generator
+@pytest.mark.parametrize(
+    "count",
+    [
+        0,
+        1,
+        5,
+        10,
+    ],
+)
+def test_random_card_number_generator_parametrized(count: int) -> None:
+    """Проверка генерации различного количества случайных номеров карт."""
+    cards = list(random_card_number_generator(count))
+    assert len(cards) == count
+    for card in cards:
+        # Проверяем формат XXXX XXXX XXXX XXXX
+        assert len(card) == 19  # 16 цифр + 3 пробела
+        assert card[4] == " " and card[9] == " " and card[14] == " "
+        # Проверяем, что все символы кроме пробелов - цифры
+        for i, ch in enumerate(card):
+            if i not in [4, 9, 14]:
+                assert ch.isdigit()

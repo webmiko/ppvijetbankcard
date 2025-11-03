@@ -1,4 +1,5 @@
-from generators.generators import card_number_generator, filter_by_currency, transaction_descriptions
+from generators.generators import (card_number_generator, filter_by_currency, random_card_number_generator,
+                                   transaction_descriptions)
 
 # Тестовые данные
 transactions = [
@@ -124,3 +125,33 @@ def test_card_number_generator_large() -> None:
     cards = list(card_number_generator(0, 2))
     expected_cards = ["0000 0000 0000 0000", "0000 0000 0000 0001", "0000 0000 0000 0002"]
     assert cards == expected_cards
+
+
+# Тесты для random_card_number_generator
+def test_random_card_number_generator() -> None:
+    """Проверка генерации случайных номеров карт."""
+    cards = list(random_card_number_generator(5))
+    assert len(cards) == 5
+    for card in cards:
+        # Проверяем формат XXXX XXXX XXXX XXXX
+        assert len(card) == 19  # 16 цифр + 3 пробела
+        assert card[4] == " " and card[9] == " " and card[14] == " "
+        # Проверяем, что все символы кроме пробелов - цифры
+        for i, ch in enumerate(card):
+            if i not in [4, 9, 14]:
+                assert ch.isdigit()
+
+
+def test_random_card_number_generator_single() -> None:
+    """Проверка генерации одного случайного номера карты."""
+    cards = list(random_card_number_generator(1))
+    assert len(cards) == 1
+    # Проверяем формат XXXX XXXX XXXX XXXX
+    assert len(cards[0]) == 19  # 16 цифр + 3 пробела
+    assert cards[0][4] == " " and cards[0][9] == " " and cards[0][14] == " "
+
+
+def test_random_card_number_generator_empty() -> None:
+    """Проверка генерации нулевого количества номеров карт."""
+    cards = list(random_card_number_generator(0))
+    assert len(cards) == 0

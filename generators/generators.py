@@ -1,3 +1,4 @@
+import random
 from typing import Any, Dict, Iterator, List
 
 
@@ -44,8 +45,28 @@ def card_number_generator(start: int, end: int) -> Iterator[str]:
         Отформатированные номера карт
     """
     for number in range(start, end + 1):
-        # Форматируем число в 16-значную строку с ведущими нулями
-        card_number = f"{number:016d}"
+        # Форматируем число в 16-значную строку с группировкой по 4 цифры
+        card = str(number)
+        # Дополняем нулями слева до 16 цифр
+        while len(card) < 16:
+            card = "0" + card
+        yield f"{card[:4]} {card[4:8]} {card[8:12]} {card[12:]}"
+
+
+def random_card_number_generator(count: int) -> Iterator[str]:
+    """
+    Генерирует случайные номера банковских карт в формате XXXX XXXX XXXX XXXX.
+    Генерирует указанное количество случайных 16-значных номеров карт.
+
+    Args:
+        count: Количество случайных номеров карт для генерации
+
+    Yields:
+        Случайные отформатированные номера карт
+    """
+    for _ in range(count):
+        # Генерируем случайное 16-значное число
+        card_number = "".join(str(random.randint(0, 9)) for _ in range(16))
         # Разделяем на группы по 4 цифры и добавляем пробелы
         formatted = f"{card_number[:4]} {card_number[4:8]} {card_number[8:12]} {card_number[12:]}"
         yield formatted
