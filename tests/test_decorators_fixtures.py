@@ -96,7 +96,7 @@ def test_log_success_to_file(
     assert result == expected_result
 
     # Проверяем содержимое файла логов
-    with open(temp_log_file, "r", encoding="utf-8") as file:
+    with open(temp_log_file, encoding="utf-8") as file:
         log_content = file.read()
 
     assert f"{function_name} ok" in log_content
@@ -118,11 +118,12 @@ def test_log_error_to_file(func: Callable, args: Tuple, kwargs: Dict, error_type
     try:
         decorated_func(*args, **kwargs)
         assert False, "Ожидалось исключение"
-    except Exception:
-        pass  # Ожидаемая ошибка
+    except (ZeroDivisionError, ValueError) as e:
+        # Ожидаемая ошибка - выводим информацию о ней
+        print(f"Перехвачено ожидаемое исключение: {type(e).__name__}: {e}")
 
     # Проверяем содержимое файла логов
-    with open(temp_log_file, "r", encoding="utf-8") as file:
+    with open(temp_log_file, encoding="utf-8") as file:
         log_content = file.read()
 
     assert f"error: {error_type}" in log_content
@@ -141,7 +142,7 @@ def test_log_multiple_calls_to_file(sample_functions: Dict[str, Callable], temp_
     add(5, 6)
 
     # Проверяем содержимое файла логов
-    with open(temp_log_file, "r", encoding="utf-8") as file:
+    with open(temp_log_file, encoding="utf-8") as file:
         log_content = file.read()
 
     # Проверяем, что все вызовы были залогированы
@@ -192,10 +193,10 @@ def test_log_with_default_filename(sample_functions: Dict[str, Callable], monkey
         # Заменяем функцию open для перенаправления записи в наш временный файл
         original_open = open
 
-        def mock_open(file: str, *args: Any, **kwargs: Any) -> Any:
-            if file == "logfile.txt":
+        def mock_open(filename: str, *args: Any, **kwargs: Any) -> Any:
+            if filename == "logfile.txt":
                 return original_open(temp_filename, *args, **kwargs)
-            return original_open(file, *args, **kwargs)
+            return original_open(filename, *args, **kwargs)
 
         monkeypatch.setattr("builtins.open", mock_open)
 
@@ -212,7 +213,7 @@ def test_log_with_default_filename(sample_functions: Dict[str, Callable], monkey
         assert result == 3
 
         # Проверяем содержимое файла логов
-        with open(temp_filename, "r", encoding="utf-8") as file:
+        with open(temp_filename, encoding="utf-8") as file:
             log_content = file.read()
 
         assert "add ok" in log_content
