@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TextIO
 
 
 def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
@@ -20,8 +20,13 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Определяем, куда выводить логи
-            to_file = filename is not None and filename != ""
-            log_output = open(filename, "a", encoding="utf-8") if to_file and filename is not None else sys.stdout
+            log_output: TextIO
+            if filename:
+                log_output = open(filename, "a", encoding="utf-8")
+                is_file_output = True
+            else:
+                log_output = sys.stdout
+                is_file_output = False
 
             try:
                 # Выполняем функцию
@@ -30,27 +35,28 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 log_output.write(f"[{timestamp}] {func.__name__} ok\n")
                 # Сбрасываем буфер, если вывод в консоль
-                if not to_file:
+                if not is_file_output:
                     log_output.flush()
                 return result
             except Exception as e:
                 # Записываем ошибку
-                error_type = type(e).__name__
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                if error_type == "ZeroDivisionError":
-                    log_output.write(
-                        f"[{timestamp}] {func.__name__} error: {error_type}. "
-                        f"Деление на ноль невозможно! Inputs: {args}, {kwargs}\n"
-                    )
+                error_type = type(e).__name__
+                error_message = f"[{timestamp}] {func.__name__} error: {error_type}. "
+
+                if isinstance(e, ZeroDivisionError):
+                    error_message += f"Деление на ноль невозможно! Inputs: {args}, {kwargs}\n"
                 else:
-                    log_output.write(f"[{timestamp}] {func.__name__} error: {error_type}. " f"Inputs: {args}, {kwargs}\n")
+                    error_message += f"Inputs: {args}, {kwargs}\n"
+
+                log_output.write(error_message)
                 # Сбрасываем буфер, если вывод в консоль
-                if not to_file:
+                if not is_file_output:
                     log_output.flush()
                 raise
             finally:
                 # Закрываем файл, если он был открыт
-                if to_file:
+                if is_file_output:
                     log_output.close()
 
         return wrapper
