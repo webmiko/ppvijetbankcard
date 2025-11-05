@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from typing import Any, Callable, Optional
 
 
@@ -26,7 +27,8 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
                 # Выполняем функцию
                 result = func(*args, **kwargs)
                 # Записываем успешное выполнение
-                log_output.write(f"{func.__name__} ok\n")
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                log_output.write(f"[{timestamp}] {func.__name__} ok\n")
                 # Сбрасываем буфер, если вывод в консоль
                 if not to_file:
                     log_output.flush()
@@ -34,13 +36,14 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
             except Exception as e:
                 # Записываем ошибку
                 error_type = type(e).__name__
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if error_type == "ZeroDivisionError":
                     log_output.write(
-                        f"{func.__name__} error: {error_type}. "
+                        f"[{timestamp}] {func.__name__} error: {error_type}. "
                         f"Деление на ноль невозможно! Inputs: {args}, {kwargs}\n"
                     )
                 else:
-                    log_output.write(f"{func.__name__} error: {error_type}. " f"Inputs: {args}, {kwargs}\n")
+                    log_output.write(f"[{timestamp}] {func.__name__} error: {error_type}. " f"Inputs: {args}, {kwargs}\n")
                 # Сбрасываем буфер, если вывод в консоль
                 if not to_file:
                     log_output.flush()
