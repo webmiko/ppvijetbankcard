@@ -13,3 +13,6 @@ divide error: ZeroDivisionError. Деление на ноль невозможн
 add_numbers ok
 divide_numbers ok
 divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
+add_numbers ok
+divide_numbers ok
+divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
