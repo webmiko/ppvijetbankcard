@@ -1,0 +1,15 @@
+
+add_numbers ok
+divide_numbers ok
+divide_numbers error: ZeroDivisionError. Inputs: (5, 0), {}
+divide ok
+divide error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (10, 0), {}
+divide ok
+divide error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (10, 0), {}
+divide ok
+divide error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (10, 0), {}
+divide ok
+divide error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (10, 0), {}
+add_numbers ok
+divide_numbers ok
+divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
