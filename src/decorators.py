@@ -2,7 +2,7 @@ import sys
 from typing import Any, Callable, Optional
 
 
-def log(filename: Optional[str] = "logfile.txt") -> Callable:
+def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
     """
     Декоратор для логирования начала и конца выполнения функции,
     а также ее результатов или возникших ошибок.
@@ -16,7 +16,7 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable:
         Callable: Декорированная функция
     """
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Определяем, куда выводить логи
             to_file = filename is not None and filename != ""

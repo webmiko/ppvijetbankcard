@@ -1,6 +1,6 @@
 import os
 import tempfile
-from typing import Any, Callable, Dict, Generator, List, Tuple
+from typing import Any, Callable, Dict, Generator, List, Tuple, Union
 
 import pytest
 
@@ -19,7 +19,7 @@ def temp_log_file() -> Generator[str, None, None]:
 
 
 @pytest.fixture
-def sample_functions() -> Dict[str, Callable]:
+def sample_functions() -> Dict[str, Callable[..., Union[int, float, str]]]:
     """Фикстура с примерами функций для тестирования декоратора."""
 
     def add(a: int, b: int) -> int:
@@ -43,7 +43,7 @@ def sample_functions() -> Dict[str, Callable]:
 
 
 @pytest.fixture
-def error_cases() -> List[Tuple[Callable, Tuple, Dict, str]]:
+def error_cases() -> List[Tuple[Callable[..., Union[int, float]], Tuple, Dict, str]]:
     """Фикстура с примерами функций и аргументов, вызывающих ошибки."""
 
     def divide_by_zero(a: int, b: int) -> float:
@@ -109,7 +109,9 @@ def test_log_success_to_file(
         (lambda a, b: int(a) + int(b), ("abc", 3), {}, "ValueError"),
     ],
 )
-def test_log_error_to_file(func: Callable, args: Tuple, kwargs: Dict, error_type: str, temp_log_file: str) -> None:
+def test_log_error_to_file(
+    func: Callable[..., Any], args: Tuple, kwargs: Dict, error_type: str, temp_log_file: str
+) -> None:
     """Тестирование обработки ошибок с логированием в файл."""
     # Применяем декоратор с указанием файла для логов
     decorated_func = log(filename=temp_log_file)(func)
