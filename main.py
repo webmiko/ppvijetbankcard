@@ -1,5 +1,9 @@
-from generators import (card_number_generator, filter_by_currency, random_card_number_generator,
-                        transaction_descriptions)
+from generators import (
+    card_number_generator,
+    filter_by_currency,
+    random_card_number_generator,
+    transaction_descriptions,
+)
 from src.decorators import log
 from src.external_api import convert_currency_to_rubles
 from src.masks import get_mask_account, get_mask_card_number
