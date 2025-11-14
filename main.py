@@ -1,5 +1,6 @@
 from generators import (card_number_generator, filter_by_currency, random_card_number_generator,
                         transaction_descriptions)
+from src.decorators import log
 from src.masks import get_mask_account, get_mask_card_number
 from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
@@ -197,6 +198,51 @@ def demo_generators() -> None:
         print(f"  {i}. {card}")
 
 
+def demo_log() -> None:
+    """Демонстрация работы декоратора log."""
+
+    print("\n" + "=" * 60)
+    print("Демонстрация работы декоратора log:")
+    print("=" * 60)
+
+    # Демонстрация работы декоратора с логированием в файл
+    @log()  # По умолчанию логи записываются в logfile.txt
+    def add_numbers(a: int, b: int) -> int:
+        """Складывает два числа."""
+        return a + b
+
+    @log()  # По умолчанию логи записываются в logfile.txt
+    def divide_numbers(a: int, b: int) -> float:
+        """Делит одно число на другое."""
+        return a / b
+
+    @log(filename=None)  # Логи выводятся в консоль
+    def greet(name: str = "Гость") -> str:
+        """Возвращает приветствие."""
+        return f"Привет, {name}!"
+
+    print("\nДемонстрация логирования в файл (logfile.txt):")
+    result1 = add_numbers(5, 7)
+    print(f"Результат сложения: {result1}")
+
+    result2 = divide_numbers(10, 2)
+    print(f"Результат деления: {result2}")
+
+    print("\nДемонстрация логирования в консоль:")
+    result3 = greet("Мир")
+    print(f"Результат функции greet: {result3}")
+
+    print("\nДемонстрация обработки ошибки:")
+    try:
+        result4 = divide_numbers(5, 0)  # Это вызовет ошибку
+        print(f"Результат деления: {result4}")
+    except ZeroDivisionError:
+        print("Произошла ошибка деления на ноль (проверьте logfile.txt для просмотра лога ошибки)")
+
+    print("\nПроверьте файл logfile.txt для просмотра логов выполнения функций")
+
+
 if __name__ == "__main__":
     demo()
     demo_generators()
+    demo_log()

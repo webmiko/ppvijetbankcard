@@ -63,6 +63,43 @@ python main.py
 
 ## Примеры использования
 
+### Декоратор для логирования
+
+```python
+from src.decorators import log
+
+# Логирование в файл по умолчанию (logfile.txt)
+@log()
+def add_numbers(a, b):
+    return a + b
+
+result = add_numbers(5, 3)  # Запишет в logfile.txt: "add_numbers ok"
+
+# Логирование в указанный файл
+@log(filename="my_app.log")
+def divide_numbers(a, b):
+    return a / b
+
+result = divide_numbers(10, 2)  # Запишет в my_app.log: "divide_numbers ok"
+
+# Логирование в консоль
+@log(filename=None)  # или @log(filename="")
+def multiply_numbers(a, b):
+    return a * b
+
+result = multiply_numbers(4, 3)  # Выведет в консоль: "multiply_numbers ok"
+
+# Обработка ошибок
+@log(filename="errors.log")
+def risky_operation(x):
+    return 10 / x
+
+try:
+    result = risky_operation(0)  # Запишет в errors.log: "risky_operation error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (0,), {}"
+except ZeroDivisionError:
+    pass
+```
+
 ### Базовые функции
 
 ```python
@@ -254,22 +291,25 @@ PPVijetBankCard/
 
 ### Описание модулей
 
-| Файл | Описание |
-|------|----------|
-| `src/masks.py` | Базовые функции маскировки карт и счетов |
-| `src/widget.py` | Умные функции для работы со строками и датами |
-| `src/processing.py` | Функции для обработки и фильтрации транзакций |
-| `generators/generators.py` | Генераторы для обработки данных транзакций и генерации номеров карт |
-| `tests/conftest.py` | Общие фикстуры для тестов |
-| `tests/test_masks.py` | Базовые тесты функций маскировки |
-| `tests/test_masks_fixtures.py` | Параметризованные тесты функций маскировки |
-| `tests/test_processing.py` | Тесты функций обработки транзакций |
-| `tests/test_processing_fixtures.py` | Параметризованные тесты функций обработки |
-| `tests/test_widget.py` | Тесты форматирования данных и дат |
-| `tests/test_widget_fixtures.py` | Параметризованные тесты форматирования |
-| `tests/test_generators.py` | Тесты функций-генераторов |
-| `tests/test_generators_fixtures.py` | Параметризованные тесты функций-генераторов |
-| `main.py` | Демонстрационная программа |
+| Файл                                | Описание                                                            |
+|-------------------------------------|---------------------------------------------------------------------|
+| `src/masks.py`                      | Базовые функции маскировки карт и счетов                            |
+| `src/widget.py`                     | Умные функции для работы со строками и датами                       |
+| `src/processing.py`                 | Функции для обработки и фильтрации транзакций                       |
+| `src/decorators.py`                 | Декоратор для логирования выполнения функций                        |
+| `generators/generators.py`          | Генераторы для обработки данных транзакций и генерации номеров карт |
+| `tests/conftest.py`                 | Общие фикстуры для тестов                                           |
+| `tests/test_masks.py`               | Базовые тесты функций маскировки                                    |
+| `tests/test_masks_fixtures.py`      | Параметризованные тесты функций маскировки                          |
+| `tests/test_processing.py`          | Тесты функций обработки транзакций                                  |
+| `tests/test_processing_fixtures.py` | Параметризованные тесты функций обработки                           |
+| `tests/test_widget.py`              | Тесты форматирования данных и дат                                   |
+| `tests/test_widget_fixtures.py`     | Параметризованные тесты форматирования                              |
+| `tests/test_decorators.py`          | Тесты декоратора для логирования                                    |
+| `tests/test_decorators_fixtures.py` | Параметризованные тесты декоратора для логирования                  |
+| `tests/test_generators.py`          | Тесты функций-генераторов                                           |
+| `tests/test_generators_fixtures.py` | Параметризованные тесты функций-генераторов                         |
+| `main.py`                           | Демонстрационная программа                                          |
 
 ## Обработка транзакций
 
