@@ -10,12 +10,13 @@ requires-python = ">=3.13"
 dependencies = [
     "coverage (>=7.11.0,<8.0.0)",
     "isort (>=7.0.0,<8.0.0)",
-    "python-dotenv (>=1.2.1,<2.0.0)"
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "requests (>=2.31.0,<3.0.0)",
 ]
 
 [project.scripts]
-lint = "flake8 . && mypy . && black . && isort ."
-lint-src = "flake8 src && mypy src && black src && isort src"
+lint = "flake8 . && mypy . && black --check . && isort --check-only ."
+lint-src = "flake8 src && mypy src && black --check src && isort --check-only src"
 
 
 [build-system]
