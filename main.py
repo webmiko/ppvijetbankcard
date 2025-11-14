@@ -1,8 +1,10 @@
 from generators import (card_number_generator, filter_by_currency, random_card_number_generator,
                         transaction_descriptions)
 from src.decorators import log
+from src.external_api import convert_currency_to_rubles
 from src.masks import get_mask_account, get_mask_card_number
 from src.processing import filter_by_state, sort_by_date
+from src.utils import load_transactions_from_json
 from src.widget import get_date, mask_account_card
 
 
@@ -242,7 +244,143 @@ def demo_log() -> None:
     print("\nПроверьте файл logfile.txt для просмотра логов выполнения функций")
 
 
+def demo_utils_and_api() -> None:
+    """Демонстрация работы функций из модулей utils и external_api."""
+
+    print("\n" + "=" * 60)
+    print("Демонстрация функций из utils.py и external_api.py:")
+    print("=" * 60)
+
+    # Демонстрация load_transactions_from_json
+    print("\nДемонстрация load_transactions_from_json:")
+    print("\nЗагрузка транзакций из файла data/operations.json:")
+
+    transactions = load_transactions_from_json("data/operations.json")
+    print(f"  ✅ Загружено транзакций: {len(transactions)}")
+
+    if transactions:
+        print("\n  Пример первой транзакции:")
+        first_tx = transactions[0]
+        print(f"    ID: {first_tx.get('id', 'N/A')}")
+        print(f"    Дата: {first_tx.get('date', 'N/A')}")
+        print(f"    Описание: {first_tx.get('description', 'N/A')}")
+        if "operationAmount" in first_tx:
+            amount = first_tx["operationAmount"].get("amount", "N/A")
+            currency = first_tx["operationAmount"].get("currency", {}).get("code", "N/A")
+            print(f"    Сумма: {amount} {currency}")
+
+    print("\n  Проверка обработки несуществующего файла:")
+    empty_result = load_transactions_from_json("nonexistent_file.json")
+    print(f"    Несуществующий файл → {empty_result} (пустой список)")
+
+    # Демонстрация convert_currency_to_rubles
+    print("\n" + "=" * 60)
+    print("Демонстрация convert_currency_to_rubles:")
+    print("=" * 60)
+
+    # Пример с RUB (не требует API)
+    print("\nКонвертация транзакции в RUB (не требует API):")
+    rub_transaction = {
+        "operationAmount": {
+            "amount": "100.50",
+            "currency": {"code": "RUB", "name": "руб."},
+        },
+        "description": "Тестовая транзакция в рублях",
+    }
+
+    try:
+        import os
+        from unittest.mock import patch
+
+        # Устанавливаем тестовый API ключ для демонстрации
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "demo_key"}):  # type: ignore
+            result = convert_currency_to_rubles(rub_transaction)
+            amount = rub_transaction.get("operationAmount", {}).get("amount", "N/A")  # type: ignore
+            print(f"  Транзакция: {amount} RUB")
+            print(f"  Результат: {result} RUB (сумма возвращается как есть)")
+    except Exception as e:
+        print(f"  ⚠️  Ошибка: {e}")
+
+    # Примеры с USD и EUR (требуют API, но покажем структуру)
+    print("\nКонвертация транзакций в USD и EUR (требуют API ключ):")
+    print("  ⚠️  Для работы с USD/EUR необходим API_KEY_CURRENCY в .env")
+    print("  ⚠️  Получить ключ можно на: https://apilayer.com/exchangerates_data-api")
+
+    usd_transaction = {
+        "operationAmount": {
+            "amount": "100.0",
+            "currency": {"code": "USD", "name": "USD"},
+        },
+        "description": "Тестовая транзакция в долларах",
+    }
+
+    eur_transaction = {
+        "operationAmount": {
+            "amount": "50.0",
+            "currency": {"code": "EUR", "name": "EUR"},
+        },
+        "description": "Тестовая транзакция в евро",
+    }
+
+    print("\n  Пример транзакции в USD:")
+    usd_amount = usd_transaction.get("operationAmount", {}).get("amount", "N/A")  # type: ignore
+    print(f"    Транзакция: {usd_amount} USD")
+    print("    → Требуется запрос к API для получения курса")
+
+    print("\n  Пример транзакции в EUR:")
+    eur_amount = eur_transaction.get("operationAmount", {}).get("amount", "N/A")  # type: ignore
+    print(f"    Транзакция: {eur_amount} EUR")
+    print("    → Требуется запрос к API для получения курса")
+
+    # Демонстрация работы с реальными транзакциями из файла
+    print("\n" + "=" * 60)
+    print("Демонстрация работы с реальными транзакциями:")
+    print("=" * 60)
+
+    if transactions:
+        print("\nПримеры транзакций из файла operations.json:")
+
+        # Показываем первые 3 транзакции с разными валютами
+        shown_count = 0
+        for tx in transactions:
+            if "operationAmount" in tx:
+                amount = tx["operationAmount"].get("amount", "N/A")
+                currency_code = tx["operationAmount"].get("currency", {}).get("code", "N/A")
+                description = tx.get("description", "N/A")
+
+                print(f"\n  Транзакция #{tx.get('id', 'N/A')}:")
+                print(f"    Описание: {description}")
+                print(f"    Сумма: {amount} {currency_code}")
+
+                # Пытаемся конвертировать только RUB (без API)
+                if currency_code == "RUB":
+                    try:
+                        import os
+                        from unittest.mock import patch
+
+                        with patch.dict(os.environ, {"API_KEY_CURRENCY": "demo_key"}):  # type: ignore
+                            result = convert_currency_to_rubles(tx)
+                            print(f"    В рублях: {result} RUB")
+                    except Exception:
+                        pass
+                else:
+                    print(f"    → Для конвертации {currency_code} требуется API ключ")
+
+                shown_count += 1
+                if shown_count >= 3:
+                    break
+
+    print("\n" + "=" * 60)
+    print("Примечание:")
+    print("=" * 60)
+    print("Для полной работы с конвертацией валют:")
+    print("1. Получите API ключ на https://apilayer.com/exchangerates_data-api")
+    print("2. Создайте файл .env в корне проекта")
+    print("3. Добавьте в .env: API_KEY_CURRENCY=ваш_ключ")
+
+
 if __name__ == "__main__":
     demo()
     demo_generators()
     demo_log()
+    demo_utils_and_api()
