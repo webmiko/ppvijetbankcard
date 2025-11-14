@@ -265,7 +265,9 @@ PPVijetBankCard/
 │   ├── __init__.py
 │   ├── masks.py          # Базовые функции маскировки
 │   ├── widget.py         # Расширенные функции
-│   └── processing.py     # Функции обработки данных
+│   ├── processing.py     # Функции обработки данных
+│   ├── utils.py          # Утилиты для работы с JSON-файлами
+│   └── external_api.py   # Функции для работы с внешними API
 ├── generators/
 │   ├── __init__.py       # Экспорт функций генераторов
 │   └── generators.py     # Генераторы для обработки данных
@@ -279,11 +281,16 @@ PPVijetBankCard/
 │   ├── test_widget.py    # Тесты форматирования данных
 │   ├── test_widget_fixtures.py  # Параметризованные тесты форматирования
 │   ├── test_generators.py     # Тесты функций-генераторов
-│   └── test_generators_fixtures.py  # Параметризованные тесты генераторов
+│   ├── test_generators_fixtures.py  # Параметризованные тесты генераторов
+│   ├── test_utils.py     # Тесты функций работы с JSON
+│   └── test_external_api.py  # Тесты функций конвертации валют
 ├── htmlcov/              # Отчет о покрытии кода тестами
 │   ├── index.html        # Главный файл отчета
 │   └── ...               # Другие файлы отчета
+├── data/
+│   └── operations.json   # Файл с данными о транзакциях
 ├── main.py               # Демонстрация всех функций
+├── .env.example          # Шаблон файла с переменными окружения
 ├── requirements.txt      # Зависимости
 ├── pyproject.toml        # Конфигурация проекта
 └── README.md             # Документация
@@ -297,6 +304,8 @@ PPVijetBankCard/
 | `src/widget.py`                     | Умные функции для работы со строками и датами                       |
 | `src/processing.py`                 | Функции для обработки и фильтрации транзакций                       |
 | `src/decorators.py`                 | Декоратор для логирования выполнения функций                        |
+| `src/utils.py`                      | Функции для загрузки транзакций из JSON-файлов                      |
+| `src/external_api.py`               | Функции для конвертации валют через внешний API                     |
 | `generators/generators.py`          | Генераторы для обработки данных транзакций и генерации номеров карт |
 | `tests/conftest.py`                 | Общие фикстуры для тестов                                           |
 | `tests/test_masks.py`               | Базовые тесты функций маскировки                                    |
@@ -309,11 +318,65 @@ PPVijetBankCard/
 | `tests/test_decorators_fixtures.py` | Параметризованные тесты декоратора для логирования                  |
 | `tests/test_generators.py`          | Тесты функций-генераторов                                           |
 | `tests/test_generators_fixtures.py` | Параметризованные тесты функций-генераторов                         |
+| `tests/test_utils.py`               | Тесты функций работы с JSON-файлами                                 |
+| `tests/test_external_api.py`        | Тесты функций конвертации валют                                     |
 | `main.py`                           | Демонстрационная программа                                          |
+| `data/operations.json`             | Файл с данными о финансовых транзакциях                             |
+| `.env.example`                      | Шаблон файла с переменными окружения                                |
 
 ## Обработка транзакций
 
 Модуль `processing.py` помогает работать с финансовыми транзакциями: фильтровать, сортировать и форматировать их.
+
+### Загрузка транзакций из JSON
+
+```python
+from src.utils import load_transactions_from_json
+
+# Загрузка транзакций из файла
+transactions = load_transactions_from_json("data/operations.json")
+print(f"Загружено транзакций: {len(transactions)}")
+
+# Функция автоматически обрабатывает ошибки:
+# - Несуществующий файл → возвращает []
+# - Пустой файл → возвращает []
+# - Невалидный JSON → возвращает []
+# - Файл с не-списком → возвращает []
+```
+
+### Конвертация валют
+
+```python
+from src.external_api import convert_currency_to_rubles
+
+# Конвертация транзакции в рубли
+transaction = {
+    "operationAmount": {
+        "amount": "100.0",
+        "currency": {"code": "USD"}
+    }
+}
+
+# Для RUB возвращает сумму как есть
+rub_transaction = {
+    "operationAmount": {
+        "amount": "100.50",
+        "currency": {"code": "RUB"}
+    }
+}
+amount_rub = convert_currency_to_rubles(rub_transaction)
+print(amount_rub)  # 100.5
+
+# Для USD и EUR делает запрос к API
+# Требуется переменная окружения API_KEY_CURRENCY
+amount_in_rubles = convert_currency_to_rubles(transaction)
+print(amount_in_rubles)  # Конвертированная сумма в рублях
+```
+
+**Примечание:** Для работы конвертации валют необходимо:
+1. Получить API ключ на https://apilayer.com/exchangerates_data-api
+2. Создать файл `.env` в корне проекта
+3. Добавить в `.env`: `API_KEY_CURRENCY=ваш_ключ`
 
 ## Генераторы для обработки данных
 
