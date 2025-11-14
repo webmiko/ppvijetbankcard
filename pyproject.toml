@@ -9,7 +9,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "coverage (>=7.11.0,<8.0.0)",
-    "isort (>=7.0.0,<8.0.0)"
+    "isort (>=7.0.0,<8.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)"
 ]
 
 [project.scripts]
