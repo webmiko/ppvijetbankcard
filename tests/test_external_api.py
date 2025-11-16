@@ -3,6 +3,7 @@ from typing import Any, Dict
 from unittest.mock import Mock, patch
 
 import pytest
+import requests  # type: ignore
 
 from src.external_api import convert_currency_to_rubles
 
@@ -248,3 +249,124 @@ class TestConvertCurrencyToRublesFixtures:
         with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
             with pytest.raises(error_type, match=error_message):
                 convert_currency_to_rubles(transaction)
+
+    def test_currency_not_dict(self) -> None:
+        """Проверка обработки случая, когда currency не является словарем."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": "RUB",  # Не словарь, а строка
+            },
+        }
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with pytest.raises(ValueError, match="должно быть словарем"):
+                convert_currency_to_rubles(transaction)
+
+    def test_empty_api_key_after_strip(self) -> None:
+        """Проверка обработки пустого API ключа после очистки от пробелов."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        # Мокируем load_dotenv и устанавливаем пустой ключ
+        with patch("src.external_api.load_dotenv"):
+            with patch.dict(os.environ, {"API_KEY_CURRENCY": "   "}, clear=True):  # Только пробелы
+                with pytest.raises(ValueError, match="API ключ не найден"):
+                    convert_currency_to_rubles(transaction)
+
+    def test_api_invalid_json_response(self) -> None:
+        """Проверка обработки невалидного JSON ответа от API."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        mock_response = Mock()
+        mock_response.json.side_effect = ValueError("Invalid JSON")
+        mock_response.text = "Not a JSON response"
+        mock_response.status_code = 200
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with patch("src.external_api.requests.get", return_value=mock_response):
+                with pytest.raises(ValueError, match="невалидный JSON"):
+                    convert_currency_to_rubles(transaction)
+
+    def test_api_error_message(self) -> None:
+        """Проверка обработки ошибки API с сообщением."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        mock_response = Mock()
+        mock_response.json.return_value = {"message": "Rate limit exceeded"}
+        mock_response.raise_for_status = Mock()
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with patch("src.external_api.requests.get", return_value=mock_response):
+                with pytest.raises(ValueError, match="Ошибка API"):
+                    convert_currency_to_rubles(transaction)
+
+    def test_api_error_message_with_api_key(self) -> None:
+        """Проверка обработки ошибки API связанной с API ключом."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        mock_response = Mock()
+        mock_response.json.return_value = {"message": "Invalid API key"}
+        mock_response.raise_for_status = Mock()
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with patch("src.external_api.requests.get", return_value=mock_response):
+                with pytest.raises(ValueError, match="Ошибка API ключа"):
+                    convert_currency_to_rubles(transaction)
+
+    def test_request_exception_with_response(self) -> None:
+        """Проверка обработки RequestException с response."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        mock_response = Mock()
+        mock_response.json.return_value = {"message": "Server error"}
+        mock_response.status_code = 500
+
+        mock_exception = requests.RequestException("Connection error")
+        mock_exception.response = mock_response
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with patch("src.external_api.requests.get", side_effect=mock_exception):
+                with pytest.raises(requests.RequestException, match="HTTP 500"):
+                    convert_currency_to_rubles(transaction)
+
+    def test_request_exception_without_response(self) -> None:
+        """Проверка обработки RequestException без response."""
+        transaction = {
+            "operationAmount": {
+                "amount": "100.0",
+                "currency": {"code": "USD"},
+            },
+        }
+
+        mock_exception = requests.RequestException("Connection timeout")
+        # У exception нет атрибута response
+
+        with patch.dict(os.environ, {"API_KEY_CURRENCY": "test_key"}):
+            with patch("src.external_api.requests.get", side_effect=mock_exception):
+                with pytest.raises(requests.RequestException, match="Connection timeout"):
+                    convert_currency_to_rubles(transaction)
