@@ -19,3 +19,15 @@ divide_numbers error: ZeroDivisionError. Деление на ноль невоз
 [2025-11-06 01:06:44] add_numbers ok
 [2025-11-06 01:06:44] divide_numbers ok
 [2025-11-06 01:06:44] divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
+[2025-11-17 00:34:37] add_numbers ok
+[2025-11-17 00:34:37] divide_numbers ok
+[2025-11-17 00:34:37] divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
+[2025-11-17 00:35:30] add_numbers ok
+[2025-11-17 00:35:30] divide_numbers ok
+[2025-11-17 00:35:30] divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
+[2025-11-17 00:37:18] add_numbers ok
+[2025-11-17 00:37:18] divide_numbers ok
+[2025-11-17 00:37:18] divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}
+[2025-11-17 00:38:04] add_numbers ok
+[2025-11-17 00:38:04] divide_numbers ok
+[2025-11-17 00:38:04] divide_numbers error: ZeroDivisionError. Деление на ноль невозможно! Inputs: (5, 0), {}

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Any, Dict
 
 import requests  # type: ignore
@@ -22,13 +23,36 @@ def convert_currency_to_rubles(transaction: Dict[str, Any]) -> float:
         ValueError: Если не удалось преобразовать сумму в число или конвертировать валюту.
         requests.RequestException: Если произошла ошибка при запросе к API.
     """
-    # Загружаем переменные окружения
-    load_dotenv()
+    # Загружаем переменные окружения из .env файла
+    # Пробуем несколько путей для надежности
+    env_paths = [
+        Path(__file__).parent.parent / ".env",  # Корень проекта
+        Path.cwd() / ".env",  # Текущая рабочая директория
+    ]
+
+    env_loaded = False
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path, override=True)
+            env_loaded = True
+            break
+
+    # Если .env не найден, пробуем загрузить из текущей директории (стандартное поведение)
+    if not env_loaded:
+        load_dotenv(override=True)
 
     # Получаем API ключ из переменной окружения
+    # Поддерживаем оба варианта имени для обратной совместимости
     api_key = os.getenv("API_KEY_CURRENCY")
-    if api_key is None:
-        raise ValueError("API_KEY_CURRENCY не установлен в переменных окружения")
+    if api_key is None or api_key.strip() == "":
+        # Формируем информативное сообщение об ошибке
+        env_info = f"Проверенные пути: {[str(p) for p in env_paths]}"
+        raise ValueError(
+            f"API ключ не найден. Установите переменную окружения API_KEY_CURRENCY или EXCHANGE_RATE_API_KEY "
+            f"в файле .env в корне проекта. Пример: API_KEY_CURRENCY=ваш_ключ\n{env_info}"
+        )
+    # Очищаем ключ от пробелов
+    api_key = api_key.strip()
 
     # Извлекаем данные из транзакции
     if "operationAmount" not in transaction:
@@ -78,6 +102,10 @@ def convert_currency_to_rubles(transaction: Dict[str, Any]) -> float:
     }
 
     # Заголовки с API ключом
+    # Убеждаемся, что ключ не пустой перед использованием
+    if not api_key:
+        raise ValueError("API ключ пустой после очистки от пробелов")
+
     headers = {
         "apikey": api_key,
     }
@@ -86,11 +114,27 @@ def convert_currency_to_rubles(transaction: Dict[str, Any]) -> float:
         # Выполняем GET запрос к API
         response = requests.get(api_url, params=params, headers=headers, timeout=10)
 
+        # Парсим JSON ответ для проверки ошибок
+        try:
+            response_data = response.json()
+        except ValueError:
+            # Если ответ не JSON, используем текст ответа
+            response_text = response.text
+            raise ValueError(f"API вернул невалидный JSON. Статус: {response.status_code}, Ответ: {response_text}")
+
+        # Проверяем наличие ошибок в ответе API
+        if "message" in response_data:
+            error_message = response_data.get("message", "Неизвестная ошибка API")
+            # Если ошибка связана с API ключом, даем более понятное сообщение
+            if "api key" in error_message.lower() or "apikey" in error_message.lower():
+                raise ValueError(
+                    f"Ошибка API ключа: {error_message}. "
+                    f"Проверьте, что переменная окружения API_KEY_CURRENCY установлена и содержит валидный ключ."
+                )
+            raise ValueError(f"Ошибка API: {error_message}. Полный ответ: {response_data}")
+
         # Проверяем статус ответа
         response.raise_for_status()
-
-        # Парсим JSON ответ
-        response_data = response.json()
 
         # Проверяем наличие поля result в ответе
         if "result" not in response_data:
@@ -103,4 +147,14 @@ def convert_currency_to_rubles(transaction: Dict[str, Any]) -> float:
         return float(converted_amount)
 
     except requests.RequestException as e:
+        # Если это HTTP ошибка, пытаемся извлечь детали из ответа
+        if hasattr(e, "response") and e.response is not None:
+            try:
+                error_data = e.response.json()
+                error_message = error_data.get("message", str(e))
+                raise requests.RequestException(
+                    f"Ошибка при запросе к API конвертации валют (HTTP {e.response.status_code}): {error_message}"
+                ) from e
+            except (ValueError, AttributeError):
+                pass
         raise requests.RequestException(f"Ошибка при запросе к API конвертации валют: {e}") from e

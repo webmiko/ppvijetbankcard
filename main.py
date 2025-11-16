@@ -356,19 +356,18 @@ def demo_utils_and_api() -> None:
                 print(f"    Описание: {description}")
                 print(f"    Сумма: {amount} {currency_code}")
 
-                # Пытаемся конвертировать только RUB (без API)
-                if currency_code == "RUB":
-                    try:
-                        import os
-                        from unittest.mock import patch
-
-                        with patch.dict(os.environ, {"API_KEY_CURRENCY": "demo_key"}):  # type: ignore
-                            result = convert_currency_to_rubles(tx)
-                            print(f"    В рублях: {result} RUB")
-                    except Exception:
-                        pass
-                else:
-                    print(f"    → Для конвертации {currency_code} требуется API ключ")
+                # Пытаемся конвертировать в рубли
+                try:
+                    result = convert_currency_to_rubles(tx)
+                    print(f"    В рублях: {result:.2f} RUB")
+                except ValueError as e:
+                    # Если ошибка связана с API ключом или другими проблемами конфигурации
+                    if "API ключ" in str(e) or "API_KEY_CURRENCY" in str(e):
+                        print(f"    → Для конвертации {currency_code} требуется API ключ")
+                    else:
+                        print(f"    → Ошибка конвертации: {e}")
+                except Exception as e:
+                    print(f"    → Ошибка при конвертации {currency_code}: {e}")
 
                 shown_count += 1
                 if shown_count >= 3:

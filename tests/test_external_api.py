@@ -76,7 +76,7 @@ class TestConvertCurrencyToRubles:
         # Мокируем load_dotenv, чтобы он не загружал переменные из .env
         with patch("src.external_api.load_dotenv"):
             with patch.dict(os.environ, {}, clear=True):
-                with pytest.raises(ValueError, match="API_KEY_CURRENCY не установлен"):
+                with pytest.raises(ValueError, match="API ключ не найден"):
                     convert_currency_to_rubles(transaction)
 
     def test_missing_operation_amount(self) -> None:
