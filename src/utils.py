@@ -6,10 +6,6 @@ from src.logger_config import setup_logger
 
 logger = setup_logger("utils")
 
-# Константы для работы с файлами
-FILE_READ_MODE = "r"
-ENCODING = "utf-8"
-
 
 def load_transactions_from_json(file_path: str) -> List[Dict[str, Any]]:
     """
@@ -38,7 +34,7 @@ def load_transactions_from_json(file_path: str) -> List[Dict[str, Any]]:
     try:
         # Открываем файл в режиме чтения
         logger.debug(f"Чтение содержимого файла: {file_path}")
-        with open(file_path, FILE_READ_MODE, encoding=ENCODING) as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             # Читаем содержимое файла
             content = file.read().strip()
 

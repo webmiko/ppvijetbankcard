@@ -2,22 +2,6 @@ from src.logger_config import setup_logger
 
 logger = setup_logger("masks")
 
-# Константы для маскировки карт и счетов
-DEFAULT_BLOCK_SIZE = 4
-MIN_CARD_LENGTH = 13
-MAX_CARD_LENGTH = 19
-STANDARD_CARD_LENGTH = 16
-VISIBLE_CARD_PREFIX_LENGTH = 6  # Первые 6 цифр для нестандартных карт
-VISIBLE_CARD_SUFFIX_LENGTH = 4  # Последние 4 цифры
-STANDARD_CARD_FIRST_PART_LENGTH = 4  # Первые 4 цифры для стандартной карты
-STANDARD_CARD_SECOND_PART_LENGTH = 2  # Следующие 2 цифры для стандартной карты
-STANDARD_CARD_MASKED_PART_LENGTH = 4  # Количество звездочек в середине стандартной карты
-VISIBLE_ACCOUNT_SUFFIX_LENGTH = 4
-CARD_MASK_SYMBOL = "*"
-ACCOUNT_MASK_PREFIX = "**"
-# Расчет: MIN_CARD_LENGTH - VISIBLE_CARD_PREFIX_LENGTH - VISIBLE_CARD_SUFFIX_LENGTH
-CARD_MIDDLE_PART_CALCULATION = MIN_CARD_LENGTH - VISIBLE_CARD_PREFIX_LENGTH - VISIBLE_CARD_SUFFIX_LENGTH
-
 
 def only_digits(value: str) -> bool:
     """Возвращает True, если строка состоит только из цифр."""
@@ -27,7 +11,7 @@ def only_digits(value: str) -> bool:
     return result
 
 
-def format_in_blocks(text: str, block_size: int = DEFAULT_BLOCK_SIZE) -> str:
+def format_in_blocks(text: str, block_size: int = 4) -> str:
     """Возвращает строку, разбитую пробелами на блоки по block_size символов."""
     logger.debug(f"Форматирование строки в блоки: text={text}, block_size={block_size}")
     if not text:
@@ -63,29 +47,22 @@ def get_mask_card_number(card_number: int | str) -> str:
         raise ValueError(error_msg)
 
     length = len(card_str)
-    if length < MIN_CARD_LENGTH or length > MAX_CARD_LENGTH:
-        error_msg = f"Длина номера карты должна быть от {MIN_CARD_LENGTH} до {MAX_CARD_LENGTH} цифр"
+    if length < 13 or length > 19:
+        error_msg = "Длина номера карты должна быть от 13 до 19 цифр"
         logger.error(f"Ошибка при маскировке номера карты {card_number}: {error_msg}")
         raise ValueError(error_msg)
 
-    # Для стандартной длины карты фиксированная расстановка пробелов: XXXX XX** **** XXXX
-    if length == STANDARD_CARD_LENGTH:
-        # Первые 4 цифры, затем 2 цифры, затем 4 звездочки, затем последние 4 цифры
-        first_part = card_str[:STANDARD_CARD_FIRST_PART_LENGTH]
-        second_part_start = STANDARD_CARD_FIRST_PART_LENGTH
-        second_part_end = STANDARD_CARD_FIRST_PART_LENGTH + STANDARD_CARD_SECOND_PART_LENGTH
-        second_part = card_str[second_part_start:second_part_end]
-        masked_part = CARD_MASK_SYMBOL * STANDARD_CARD_MASKED_PART_LENGTH
-        last_part = card_str[-VISIBLE_CARD_SUFFIX_LENGTH:]
-        masked_number = f"{first_part} {second_part}{CARD_MASK_SYMBOL}{CARD_MASK_SYMBOL} {masked_part} {last_part}"
+    # Для 16-значного номера фиксированная расстановка пробелов: XXXX XX** **** XXXX
+    if length == 16:
+        masked_number = f"{card_str[:4]} {card_str[4:6]}** **** {card_str[-4:]}"
     else:
         # Для прочих длин: первые 6, звёздочки, последние 4
-        first6 = card_str[:VISIBLE_CARD_PREFIX_LENGTH]
-        last4 = card_str[-VISIBLE_CARD_SUFFIX_LENGTH:]
-        middle_len = max(0, length - CARD_MIDDLE_PART_CALCULATION)
-        masked_middle = CARD_MASK_SYMBOL * middle_len
+        first6 = card_str[:6]
+        last4 = card_str[-4:]
+        middle_len = max(0, length - 10)
+        masked_middle = "*" * middle_len
         masked_raw = f"{first6}{masked_middle}{last4}"
-        # Возвращаем строку, разбитую пробелами каждые DEFAULT_BLOCK_SIZE символа
+        # Возвращаем строку, разбитую пробелами каждые 4 символа
         masked_number = format_in_blocks(masked_raw)
 
     logger.info(f"Номер карты успешно замаскирован: {masked_number}")
@@ -113,11 +90,8 @@ def get_mask_account(account_number: int | str) -> str:
         logger.error(f"Ошибка при маскировке номера счета {account_number}: {error_msg}")
         raise ValueError(error_msg)
 
-    if len(acc_str) >= VISIBLE_ACCOUNT_SUFFIX_LENGTH:
-        tail = acc_str[-VISIBLE_ACCOUNT_SUFFIX_LENGTH:]
-    else:
-        tail = acc_str
-    masked_account = f"{ACCOUNT_MASK_PREFIX}{tail}"
+    tail = acc_str[-4:] if len(acc_str) >= 4 else acc_str
+    masked_account = f"**{tail}"
     logger.info(f"Номер счета успешно замаскирован: {masked_account}")
     # Для маски счёта пробелы не требуются
     return masked_account
