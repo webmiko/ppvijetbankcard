@@ -226,3 +226,6 @@ __marimo__/
 # Homework files
 generators/*.txt
 src/*.txt
+
+# Инструкции для ИИ (не коммитим)
+pre-code/
