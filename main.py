@@ -382,8 +382,74 @@ def demo_utils_and_api() -> None:
     print("3. Добавьте в .env: API_KEY_CURRENCY=ваш_ключ")
 
 
+def demo_logging() -> None:
+    """Демонстрация работы логирования в модулях masks и utils."""
+
+    print("\n" + "=" * 60)
+    print("Демонстрация логирования в модулях masks и utils:")
+    print("=" * 60)
+
+    print("\n📝 Логирование модуля masks:")
+    print("-" * 60)
+
+    # Демонстрация успешного маскирования карты
+    print("\n✅ Успешное маскирование номера карты:")
+    try:
+        result = get_mask_card_number("1234567890123456")
+        print(f"  Результат: {result}")
+        print("  → Проверьте logs/masks.log для просмотра логов")
+    except ValueError as e:
+        print(f"  Ошибка: {e}")
+
+    # Демонстрация успешного маскирования счета
+    print("\n✅ Успешное маскирование номера счета:")
+    try:
+        result = get_mask_account("1234567890123456")
+        print(f"  Результат: {result}")
+        print("  → Проверьте logs/masks.log для просмотра логов")
+    except ValueError as e:
+        print(f"  Ошибка: {e}")
+
+    # Демонстрация обработки ошибок
+    print("\n❌ Обработка ошибок при маскировании:")
+    try:
+        get_mask_card_number("12345")  # Некорректная длина
+    except ValueError as e:
+        print(f"  Ошибка обработана: {e}")
+        print("  → Проверьте logs/masks.log для просмотра логов ошибок")
+
+    print("\n📝 Логирование модуля utils:")
+    print("-" * 60)
+
+    # Демонстрация успешной загрузки транзакций
+    print("\n✅ Успешная загрузка транзакций:")
+    transactions = load_transactions_from_json("data/operations.json")
+    print(f"  Загружено транзакций: {len(transactions)}")
+    print("  → Проверьте logs/utils.log для просмотра логов")
+
+    # Демонстрация обработки несуществующего файла
+    print("\n⚠️  Обработка несуществующего файла:")
+    empty_result = load_transactions_from_json("nonexistent_file.json")
+    print(f"  Результат: {len(empty_result)} транзакций (пустой список)")
+    print("  → Проверьте logs/utils.log для просмотра предупреждений")
+
+    print("\n" + "=" * 60)
+    print("Информация о логах:")
+    print("=" * 60)
+    print("📁 Файлы логов находятся в директории logs/:")
+    print("  - logs/masks.log - логи модуля masks")
+    print("  - logs/utils.log - логи модуля utils")
+    print("\n📋 Формат логов:")
+    print("  <метка_времени> - <модуль> - <уровень> - <сообщение>")
+    print("\nПример:")
+    print("  2025-11-19 00:45:37 - src.masks - INFO - Номер карты успешно замаскирован, длина: 16")
+    print("  2025-11-19 00:45:37 - src.utils - ERROR - Ошибка при загрузке файла: ...")
+    print("\n💡 Логи перезаписываются при каждом запуске приложения")
+
+
 if __name__ == "__main__":
     demo()
     demo_generators()
     demo_log()
     demo_utils_and_api()
+    demo_logging()
