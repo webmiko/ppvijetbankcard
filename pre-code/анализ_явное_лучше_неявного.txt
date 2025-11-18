@@ -1,0 +1,177 @@
+АНАЛИЗ КОДА НА СООТВЕТСТВИЕ ПРИНЦИПУ "ЯВНОЕ ЛУЧШЕ НЕЯВНОГО"
+================================================================
+
+Проверены файлы:
+- src/logger_config.py
+- src/masks.py
+- src/utils.py
+
+ПРИНЦИП: "Explicit is better than implicit" (Zen of Python)
+-----------------------------------------------------------
+Явное лучше неявного означает:
+- Использование именованных констант вместо магических чисел и строк
+- Явные параметры вместо неявных значений по умолчанию
+- Явные проверки и валидации
+- Явные возвращаемые значения и обработка ошибок
+
+
+АНАЛИЗ ФАЙЛОВ:
+==============
+
+1. src/logger_config.py
+------------------------
+
+НАЙДЕННЫЕ ПРОБЛЕМЫ:
+- Магическая строка "logs" (имя папки)
+- Магическая строка "w" (режим записи файла)
+- Магическая строка "utf-8" (кодировка)
+- Магическая строка формата лога: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+- Магическая строка формата даты: "%Y-%m-%d %H:%M:%S"
+- Магическое значение logging.INFO (хотя это константа, но можно сделать более явным)
+
+РЕКОМЕНДАЦИИ:
+- Вынести все магические значения в константы в начале модуля
+- Создать константы:
+  * LOGS_DIR_NAME = "logs"
+  * LOG_FILE_MODE = "w"
+  * ENCODING = "utf-8"
+  * LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  * DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+  * DEFAULT_LOG_LEVEL = logging.INFO
+
+ОЦЕНКА: ⚠️ ТРЕБУЕТ УЛУЧШЕНИЯ
+
+
+2. src/masks.py
+---------------
+
+НАЙДЕННЫЕ ПРОБЛЕМЫ:
+- Магическое число 4 (размер блока по умолчанию в format_in_blocks)
+- Магические числа 13, 19 (минимальная и максимальная длина номера карты)
+- Магическое число 16 (длина стандартной карты)
+- Магические числа 4, 6 (количество видимых цифр в начале и конце)
+- Магическое число 10 (13-19 минус 10 для расчета средней части)
+- Магическая строка "**" (префикс для маски счета)
+- Магическая строка "*" (символ маскировки)
+
+РЕКОМЕНДАЦИИ:
+- Вынести все магические значения в константы в начале модуля:
+  * DEFAULT_BLOCK_SIZE = 4
+  * MIN_CARD_LENGTH = 13
+  * MAX_CARD_LENGTH = 19
+  * STANDARD_CARD_LENGTH = 16
+  * VISIBLE_CARD_PREFIX_LENGTH = 6
+  * VISIBLE_CARD_SUFFIX_LENGTH = 4
+  * VISIBLE_ACCOUNT_SUFFIX_LENGTH = 4
+  * CARD_MASK_SYMBOL = "*"
+  * ACCOUNT_MASK_PREFIX = "**"
+  * CARD_MIDDLE_PART_CALCULATION = 10  # MIN_CARD_LENGTH - VISIBLE_CARD_PREFIX_LENGTH - VISIBLE_CARD_SUFFIX_LENGTH
+
+ОЦЕНКА: ⚠️ ТРЕБУЕТ УЛУЧШЕНИЯ
+
+
+3. src/utils.py
+---------------
+
+НАЙДЕННЫЕ ПРОБЛЕМЫ:
+- Магическая строка "r" (режим чтения файла)
+- Магическая строка "utf-8" (кодировка)
+
+РЕКОМЕНДАЦИИ:
+- Хотя "r" и "utf-8" являются стандартными значениями для open(),
+  для большей явности можно вынести в константы:
+  * FILE_READ_MODE = "r"
+  * ENCODING = "utf-8"
+- Или использовать константы из модуля io (если применимо)
+
+ОЦЕНКА: ✅ ПРИЕМЛЕМО (можно улучшить для консистентности)
+
+
+ИТОГОВАЯ ОЦЕНКА:
+================
+
+ОБЩАЯ ОЦЕНКА: ⚠️ ТРЕБУЕТ УЛУЧШЕНИЯ
+
+Основные проблемы:
+1. Много магических чисел в masks.py (13, 19, 16, 4, 6, 10)
+2. Магические строки в logger_config.py ("logs", "w", "utf-8", форматы)
+3. Отсутствие именованных констант для важных значений
+
+ПОЛОЖИТЕЛЬНЫЕ МОМЕНТЫ:
+- Явные type hints во всех функциях ✅
+- Явные docstrings с описанием параметров и возвращаемых значений ✅
+- Явная обработка ошибок с явными сообщениями ✅
+- Явные проверки условий (if not, isinstance) ✅
+- Явные возвращаемые значения ✅
+
+
+РЕКОМЕНДАЦИИ ПО УЛУЧШЕНИЮ:
+===========================
+
+1. Создать константы в начале каждого модуля для всех магических значений
+2. Использовать эти константы вместо прямых значений в коде
+3. Добавить комментарии к константам, объясняющие их назначение
+4. Для консистентности использовать одинаковые имена констант (например, ENCODING везде)
+
+ПРИМЕР УЛУЧШЕНИЯ для logger_config.py:
+----------------------------------------
+```python
+"""Модуль для настройки логирования в проекте."""
+
+import logging
+from pathlib import Path
+
+# Константы для настройки логирования
+LOGS_DIR_NAME = "logs"
+LOG_FILE_MODE = "w"  # Режим перезаписи при каждом запуске
+ENCODING = "utf-8"
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+DEFAULT_LOG_LEVEL = logging.INFO
+
+def setup_logger(module_name: str) -> logging.Logger:
+    ...
+    logs_dir = project_root / LOGS_DIR_NAME
+    ...
+    handler = logging.FileHandler(log_file, mode=LOG_FILE_MODE, encoding=ENCODING)
+    formatter = logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT)
+    logger.setLevel(DEFAULT_LOG_LEVEL)
+    ...
+```
+
+ПРИМЕР УЛУЧШЕНИЯ для masks.py:
+-------------------------------
+```python
+from src.logger_config import setup_logger
+
+logger = setup_logger("masks")
+
+# Константы для маскировки карт и счетов
+DEFAULT_BLOCK_SIZE = 4
+MIN_CARD_LENGTH = 13
+MAX_CARD_LENGTH = 19
+STANDARD_CARD_LENGTH = 16
+VISIBLE_CARD_PREFIX_LENGTH = 6
+VISIBLE_CARD_SUFFIX_LENGTH = 4
+VISIBLE_ACCOUNT_SUFFIX_LENGTH = 4
+CARD_MASK_SYMBOL = "*"
+ACCOUNT_MASK_PREFIX = "**"
+# Расчет: MIN_CARD_LENGTH - VISIBLE_CARD_PREFIX_LENGTH - VISIBLE_CARD_SUFFIX_LENGTH
+CARD_MIDDLE_PART_CALCULATION = MIN_CARD_LENGTH - VISIBLE_CARD_PREFIX_LENGTH - VISIBLE_CARD_SUFFIX_LENGTH
+
+def format_in_blocks(text: str, block_size: int = DEFAULT_BLOCK_SIZE) -> str:
+    ...
+
+def get_mask_card_number(card_number: int | str) -> str:
+    ...
+    if length < MIN_CARD_LENGTH or length > MAX_CARD_LENGTH:
+        ...
+    if length == STANDARD_CARD_LENGTH:
+        ...
+    first6 = card_str[:VISIBLE_CARD_PREFIX_LENGTH]
+    last4 = card_str[-VISIBLE_CARD_SUFFIX_LENGTH:]
+    middle_len = max(0, length - CARD_MIDDLE_PART_CALCULATION)
+    masked_middle = CARD_MASK_SYMBOL * middle_len
+    ...
+```
+
