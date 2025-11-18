@@ -226,3 +226,6 @@ __marimo__/
 # Homework files
 generators/*.txt
 src/*.txt
+
+# Log files (but keep logs directory)
+*.log
