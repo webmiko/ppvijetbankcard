@@ -1,7 +1,11 @@
 import pytest
 
-from generators.generators import (card_number_generator, filter_by_currency, random_card_number_generator,
-                                   transaction_descriptions)
+from generators.generators import (
+    card_number_generator,
+    filter_by_currency,
+    random_card_number_generator,
+    transaction_descriptions,
+)
 
 # Тестовые данные
 transactions = [
