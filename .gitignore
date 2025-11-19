@@ -230,8 +230,6 @@ generators/*.txt
 src/*.txt
 
 pre-code/
-# Исключение: инструкция по разработке должна быть в репозитории
-!pre-code/инструкция_разработки.md
 
 # Log files (but keep logs directory)
 *.log
