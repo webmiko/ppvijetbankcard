@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd  # type: ignore[import-untyped]
+from pandas import isna  # type: ignore[import-untyped]
 
 
 def _setup_logger() -> logging.Logger:
@@ -79,6 +80,9 @@ def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
         for transaction_raw in transactions_raw:
             transaction: Dict[str, Any] = {}
             for key, value in transaction_raw.items():
+                # Пропускаем NaN значения
+                if isna(value):
+                    continue
                 # Преобразуем float в int для id, если возможно
                 if key == "id" and isinstance(value, float):
                     transaction[key] = int(value)
@@ -132,6 +136,9 @@ def load_transactions_from_excel(file_path: str) -> List[Dict[str, Any]]:
         for transaction_raw in transactions_raw:
             transaction: Dict[str, Any] = {}
             for key, value in transaction_raw.items():
+                # Пропускаем NaN значения
+                if isna(value):
+                    continue
                 # Преобразуем float в int для id, если возможно
                 if key == "id" and isinstance(value, float):
                     transaction[key] = int(value)
