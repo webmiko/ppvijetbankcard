@@ -33,7 +33,9 @@
 ## Быстрый старт
 
 ### Требования
-- **Python 3.8+** (рекомендуется Python 3.9+)
+- **Python 3.13+**
+- **pandas** - для работы с CSV и Excel файлами
+- **openpyxl** - для чтения Excel файлов (XLSX)
 
 ### Установка
 
@@ -343,6 +345,33 @@ print(f"Загружено транзакций: {len(transactions)}")
 # - Невалидный JSON → возвращает []
 # - Файл с не-списком → возвращает []
 ```
+
+### Загрузка транзакций из CSV и Excel
+
+Библиотека поддерживает загрузку транзакций из CSV и Excel файлов (XLSX):
+
+```python
+from src.csv_loader import load_transactions_from_csv, load_transactions_from_excel
+
+# Загрузка транзакций из CSV файла
+csv_transactions = load_transactions_from_csv("data/transactions.csv")
+print(f"Загружено транзакций из CSV: {len(csv_transactions)}")
+
+# Загрузка транзакций из Excel файла
+excel_transactions = load_transactions_from_excel("data/transactions_excel.xlsx")
+print(f"Загружено транзакций из Excel: {len(excel_transactions)}")
+
+# Функции автоматически обрабатывают ошибки:
+# - Несуществующий файл → возвращает []
+# - Пустой файл → возвращает []
+# - Ошибка чтения файла → возвращает []
+```
+
+**Примечание:** Для работы с CSV и Excel файлами необходимо установить зависимости:
+- `pandas` - для работы с табличными данными
+- `openpyxl` - для чтения Excel файлов
+
+Эти зависимости уже включены в `pyproject.toml` проекта.
 
 ### Конвертация валют
 
