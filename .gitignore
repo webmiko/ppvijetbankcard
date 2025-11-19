@@ -20,6 +20,7 @@ parts/
 sdist/
 var/
 wheels/
+pre-code/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -229,3 +230,9 @@ generators/*.txt
 src/*.txt
 
 pre-code/
+
+# Log files (but keep logs directory)
+*.log
+
+# Wiki rules file
+wiki/Правила-разработки.md
