@@ -226,3 +226,5 @@ __marimo__/
 # Homework files
 generators/*.txt
 src/*.txt
+
+pre-code/
