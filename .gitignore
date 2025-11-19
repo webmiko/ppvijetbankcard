@@ -20,6 +20,7 @@ parts/
 sdist/
 var/
 wheels/
+pre-code/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -57,6 +58,7 @@ cover/
 
 # Django stuff:
 *.log
+!logs/*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -226,3 +228,11 @@ __marimo__/
 # Homework files
 generators/*.txt
 src/*.txt
+
+pre-code/
+
+# Log files (but keep logs directory)
+*.log
+
+# Wiki rules file
+wiki/Правила-разработки.md
