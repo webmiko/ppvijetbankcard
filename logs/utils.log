@@ -1,0 +1,4 @@
+2025-11-19 03:19:48 - src.utils - DEBUG - Начало загрузки транзакций из файла: data/operations.json
+2025-11-19 03:19:48 - src.utils - INFO - Успешно загружено транзакций: 101 из файла data/operations.json
+2025-11-19 03:19:48 - src.utils - DEBUG - Начало загрузки транзакций из файла: nonexistent_file.json
+2025-11-19 03:19:48 - src.utils - WARNING - Файл не найден: nonexistent_file.json
