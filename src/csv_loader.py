@@ -52,11 +52,30 @@ def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
     """
     Загружает список транзакций из CSV-файла.
 
+    Преобразует плоскую структуру CSV (amount, currency_code, currency_name)
+    во вложенную структуру JSON (operationAmount.amount, operationAmount.currency.code),
+    совместимую с остальным кодом проекта.
+
     Args:
         file_path: Путь до CSV-файла с транзакциями
 
     Returns:
-        Список словарей с данными о финансовых транзакциях.
+        Список словарей с данными о финансовых транзакциях в формате:
+        {
+            "id": int,
+            "state": str,
+            "date": str,
+            "description": str,
+            "from": str,
+            "to": str,
+            "operationAmount": {
+                "amount": str,
+                "currency": {
+                    "code": str,
+                    "name": str
+                }
+            }
+        }
         Возвращает пустой список, если:
         - файл не найден
         - произошла ошибка при чтении CSV
@@ -75,23 +94,47 @@ def load_transactions_from_csv(file_path: str) -> List[Dict[str, Any]]:
         # Преобразование DataFrame в список словарей
         transactions_raw = df.to_dict("records")
 
-        # Преобразование типов для соответствия формату JSON (числа могут быть float)
+        # Преобразование плоской структуры CSV в вложенную структуру JSON
         transactions: List[Dict[str, Any]] = []
         for transaction_raw in transactions_raw:
             transaction: Dict[str, Any] = {}
-            for key, value in transaction_raw.items():
-                # Пропускаем NaN значения
-                if isna(value):
-                    continue
-                # Преобразуем float в int для id, если возможно
-                if key == "id" and isinstance(value, float):
-                    transaction[key] = int(value)
-                # Преобразуем float в str для amount, если нужно
-                elif key == "amount" and isinstance(value, float):
-                    transaction[key] = str(value)
+
+            # Копируем базовые поля
+            for key in ["id", "state", "date", "description", "from", "to"]:
+                if key in transaction_raw:
+                    value = transaction_raw[key]
+                    if isna(value):
+                        continue
+                    # Преобразуем float в int для id
+                    if key == "id" and isinstance(value, float):
+                        transaction[key] = int(value)
+                    else:
+                        transaction[key] = value
+
+            # Преобразуем плоскую структуру валюты в вложенную структуру operationAmount
+            if "amount" in transaction_raw and not isna(transaction_raw["amount"]):
+                amount = transaction_raw["amount"]
+                # Преобразуем float в str для amount
+                if isinstance(amount, float):
+                    amount_str = str(amount)
                 else:
-                    transaction[key] = value
-            transactions.append(transaction)
+                    amount_str = str(amount)
+
+                currency_code = transaction_raw.get("currency_code", "")
+                currency_name = transaction_raw.get("currency_name", "")
+
+                # Пропускаем NaN значения для валюты
+                if not isna(currency_code) and not isna(currency_name):
+                    transaction["operationAmount"] = {
+                        "amount": amount_str,
+                        "currency": {
+                            "code": str(currency_code),
+                            "name": str(currency_name),
+                        },
+                    }
+
+            if transaction:  # Добавляем только если есть данные
+                transactions.append(transaction)
 
         logger.info(f"Успешно загружено {len(transactions)} транзакций из CSV файла: {file_path}")
         return transactions
@@ -108,11 +151,30 @@ def load_transactions_from_excel(file_path: str) -> List[Dict[str, Any]]:
     """
     Загружает список транзакций из Excel-файла (XLSX).
 
+    Преобразует плоскую структуру Excel (amount, currency_code, currency_name)
+    во вложенную структуру JSON (operationAmount.amount, operationAmount.currency.code),
+    совместимую с остальным кодом проекта.
+
     Args:
         file_path: Путь до Excel-файла с транзакциями
 
     Returns:
-        Список словарей с данными о финансовых транзакциях.
+        Список словарей с данными о финансовых транзакциях в формате:
+        {
+            "id": int,
+            "state": str,
+            "date": str,
+            "description": str,
+            "from": str,
+            "to": str,
+            "operationAmount": {
+                "amount": str,
+                "currency": {
+                    "code": str,
+                    "name": str
+                }
+            }
+        }
         Возвращает пустой список, если:
         - файл не найден
         - произошла ошибка при чтении Excel
@@ -131,23 +193,47 @@ def load_transactions_from_excel(file_path: str) -> List[Dict[str, Any]]:
         # Преобразование DataFrame в список словарей
         transactions_raw = df.to_dict("records")
 
-        # Преобразование типов для соответствия формату JSON (числа могут быть float)
+        # Преобразование плоской структуры Excel в вложенную структуру JSON
         transactions: List[Dict[str, Any]] = []
         for transaction_raw in transactions_raw:
             transaction: Dict[str, Any] = {}
-            for key, value in transaction_raw.items():
-                # Пропускаем NaN значения
-                if isna(value):
-                    continue
-                # Преобразуем float в int для id, если возможно
-                if key == "id" and isinstance(value, float):
-                    transaction[key] = int(value)
-                # Преобразуем float в str для amount, если нужно
-                elif key == "amount" and isinstance(value, float):
-                    transaction[key] = str(value)
+
+            # Копируем базовые поля
+            for key in ["id", "state", "date", "description", "from", "to"]:
+                if key in transaction_raw:
+                    value = transaction_raw[key]
+                    if isna(value):
+                        continue
+                    # Преобразуем float в int для id
+                    if key == "id" and isinstance(value, float):
+                        transaction[key] = int(value)
+                    else:
+                        transaction[key] = value
+
+            # Преобразуем плоскую структуру валюты в вложенную структуру operationAmount
+            if "amount" in transaction_raw and not isna(transaction_raw["amount"]):
+                amount = transaction_raw["amount"]
+                # Преобразуем float в str для amount
+                if isinstance(amount, float):
+                    amount_str = str(amount)
                 else:
-                    transaction[key] = value
-            transactions.append(transaction)
+                    amount_str = str(amount)
+
+                currency_code = transaction_raw.get("currency_code", "")
+                currency_name = transaction_raw.get("currency_name", "")
+
+                # Пропускаем NaN значения для валюты
+                if not isna(currency_code) and not isna(currency_name):
+                    transaction["operationAmount"] = {
+                        "amount": amount_str,
+                        "currency": {
+                            "code": str(currency_code),
+                            "name": str(currency_name),
+                        },
+                    }
+
+            if transaction:  # Добавляем только если есть данные
+                transactions.append(transaction)
 
         logger.info(f"Успешно загружено {len(transactions)} транзакций из Excel файла: {file_path}")
         return transactions

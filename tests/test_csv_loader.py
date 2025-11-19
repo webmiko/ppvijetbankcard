@@ -18,8 +18,24 @@ class TestLoadTransactionsFromCsv:
         mock_path.return_value = mock_path_instance
         mock_df = Mock()
         mock_df.to_dict.return_value = [
-            {"id": 650703.0, "state": "EXECUTED", "amount": 16210.0, "currency_code": "PEN"},
-            {"id": 3598919.0, "state": "EXECUTED", "amount": 29740.0, "currency_code": "COP"},
+            {
+                "id": 650703.0,
+                "state": "EXECUTED",
+                "amount": 16210.0,
+                "currency_code": "PEN",
+                "currency_name": "Sol",
+                "date": "2023-09-05T11:30:32Z",
+                "description": "Перевод организации",
+            },
+            {
+                "id": 3598919.0,
+                "state": "EXECUTED",
+                "amount": 29740.0,
+                "currency_code": "COP",
+                "currency_name": "Colombian Peso",
+                "date": "2023-09-06T12:00:00Z",
+                "description": "Перевод со счета на счет",
+            },
         ]
         mock_read_csv.return_value = mock_df
 
@@ -30,7 +46,10 @@ class TestLoadTransactionsFromCsv:
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[0]["id"] == 650703
-        assert result[0]["amount"] == "16210.0"
+        assert "operationAmount" in result[0]
+        assert result[0]["operationAmount"]["amount"] == "16210.0"
+        assert result[0]["operationAmount"]["currency"]["code"] == "PEN"
+        assert result[0]["operationAmount"]["currency"]["name"] == "Sol"
         mock_path.assert_called_once_with("data/transactions.csv")
         mock_read_csv.assert_called_once()
 
@@ -99,8 +118,24 @@ class TestLoadTransactionsFromExcel:
         mock_path.return_value = mock_path_instance
         mock_df = Mock()
         mock_df.to_dict.return_value = [
-            {"id": 650703.0, "state": "EXECUTED", "amount": 16210.0, "currency_code": "PEN"},
-            {"id": 3598919.0, "state": "EXECUTED", "amount": 29740.0, "currency_code": "COP"},
+            {
+                "id": 650703.0,
+                "state": "EXECUTED",
+                "amount": 16210.0,
+                "currency_code": "PEN",
+                "currency_name": "Sol",
+                "date": "2023-09-05T11:30:32Z",
+                "description": "Перевод организации",
+            },
+            {
+                "id": 3598919.0,
+                "state": "EXECUTED",
+                "amount": 29740.0,
+                "currency_code": "COP",
+                "currency_name": "Colombian Peso",
+                "date": "2023-09-06T12:00:00Z",
+                "description": "Перевод со счета на счет",
+            },
         ]
         mock_read_excel.return_value = mock_df
 
@@ -111,7 +146,10 @@ class TestLoadTransactionsFromExcel:
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[0]["id"] == 650703
-        assert result[0]["amount"] == "16210.0"
+        assert "operationAmount" in result[0]
+        assert result[0]["operationAmount"]["amount"] == "16210.0"
+        assert result[0]["operationAmount"]["currency"]["code"] == "PEN"
+        assert result[0]["operationAmount"]["currency"]["name"] == "Sol"
         mock_path.assert_called_once_with("data/transactions_excel.xlsx")
         mock_read_excel.assert_called_once_with("data/transactions_excel.xlsx", engine="openpyxl")
 
