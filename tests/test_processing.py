@@ -193,13 +193,13 @@ class TestProcessBankSearch:
 
     def test_process_bank_search_attribute_error(self) -> None:
         """Тест обработки AttributeError при некорректных данных транзакции."""
-        transactions: list[dict[str, Any]] = [
+        transactions: list[dict[str, Any] | None] = [
             {"id": 1, "description": "Перевод организации"},
             None,  # None вместо словаря
             {"id": 3, "description": "Перевод со счета"},
         ]
 
-        result = process_bank_search(transactions, "Перевод")
+        result = process_bank_search(transactions, "Перевод")  # type: ignore[arg-type]
 
         assert isinstance(result, list)
         assert len(result) == 0
@@ -337,14 +337,14 @@ class TestProcessBankOperations:
 
     def test_process_bank_operations_attribute_error(self) -> None:
         """Тест обработки AttributeError при некорректных данных транзакции."""
-        transactions: list[dict[str, Any]] = [
+        transactions: list[dict[str, Any] | None] = [
             {"id": 1, "description": "Перевод организации"},
             None,  # None вместо словаря
             {"id": 3, "description": "Перевод организации"},
         ]
         categories = ["Перевод организации"]
 
-        result = process_bank_operations(transactions, categories)
+        result = process_bank_operations(transactions, categories)  # type: ignore[arg-type]
 
         assert isinstance(result, dict)
         assert len(result) == 0
@@ -484,13 +484,13 @@ class TestFilterByCurrency:
 
     def test_filter_by_currency_attribute_error(self) -> None:
         """Тест обработки AttributeError при некорректных данных транзакции."""
-        transactions: list[dict[str, Any]] = [
+        transactions: list[dict[str, Any] | None] = [
             {"id": 1, "operationAmount": {"currency": {"code": "RUB"}}},
             None,  # None вместо словаря
             {"id": 3, "operationAmount": {"currency": {"code": "RUB"}}},
         ]
 
-        result = filter_by_currency(transactions, "RUB")
+        result = filter_by_currency(transactions, "RUB")  # type: ignore[arg-type]
 
         assert isinstance(result, list)
         assert len(result) == 0
