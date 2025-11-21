@@ -1,9 +1,15 @@
 import sys
 from datetime import datetime
-from typing import Any, Callable, Optional, TextIO
+from typing import IO, Any, Callable, Optional
+
+# Константы модуля
+DEFAULT_LOG_FILE = "logfile.txt"
+ENCODING = "utf-8"
+FILE_APPEND_MODE = "a"
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
+def log(filename: Optional[str] = DEFAULT_LOG_FILE) -> Callable[..., Any]:
     """
     Декоратор для логирования начала и конца выполнения функции,
     а также ее результатов или возникших ошибок.
@@ -20,9 +26,9 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Определяем, куда выводить логи
-            log_output: TextIO
+            log_output: IO[str]
             if filename:
-                log_output = open(filename, "a", encoding="utf-8")
+                log_output = open(filename, FILE_APPEND_MODE, encoding=ENCODING)
                 is_file_output = True
             else:
                 log_output = sys.stdout
@@ -32,7 +38,7 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
                 # Выполняем функцию
                 result = func(*args, **kwargs)
                 # Записываем успешное выполнение
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
                 log_output.write(f"[{timestamp}] {func.__name__} ok\n")
                 # Сбрасываем буфер, если вывод в консоль
                 if not is_file_output:
@@ -40,7 +46,7 @@ def log(filename: Optional[str] = "logfile.txt") -> Callable[..., Any]:
                 return result
             except Exception as e:
                 # Записываем ошибку
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
                 error_type = type(e).__name__
                 error_message = f"[{timestamp}] {func.__name__} error: {error_type}. "
 
