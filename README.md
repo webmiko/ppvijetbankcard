@@ -328,7 +328,7 @@ PPVijetBankCard/
 
 ## Обработка транзакций
 
-Модуль `processing.py` помогает работать с финансовыми транзакциями: фильтровать, сортировать и форматировать их.
+Модуль `processing.py` помогает работать с финансовыми транзакциями: фильтровать, сортировать, искать и анализировать их.
 
 ### Загрузка транзакций из JSON
 
@@ -406,6 +406,103 @@ print(amount_in_rubles)  # Конвертированная сумма в руб
 1. Получить API ключ на https://apilayer.com/exchangerates_data-api
 2. Создать файл `.env` в корне проекта
 3. Добавить в `.env`: `API_KEY_CURRENCY=ваш_ключ`
+
+### Фильтрация транзакций
+
+#### Фильтрация по статусу
+
+```python
+from src.processing import filter_by_state
+
+# Фильтрация по статусу EXECUTED (по умолчанию)
+executed_transactions = filter_by_state(transactions)
+
+# Фильтрация по конкретному статусу
+pending_transactions = filter_by_state(transactions, "PENDING")
+canceled_transactions = filter_by_state(transactions, "CANCELED")
+```
+
+#### Фильтрация по валюте
+
+```python
+from src.processing import filter_by_currency
+
+# Фильтрация рублевых транзакций
+rub_transactions = filter_by_currency(transactions, "RUB")
+
+# Фильтрация долларовых транзакций
+usd_transactions = filter_by_currency(transactions, "USD")
+
+# Фильтрация евро транзакций
+eur_transactions = filter_by_currency(transactions, "EUR")
+```
+
+#### Сортировка по дате
+
+```python
+from src.processing import sort_by_date
+
+# Сортировка по убыванию (от новых к старым) - по умолчанию
+sorted_desc = sort_by_date(transactions)
+
+# Сортировка по возрастанию (от старых к новым)
+sorted_asc = sort_by_date(transactions, is_reverse_order=False)
+```
+
+### Поиск транзакций по описанию
+
+Функция `process_bank_search` позволяет искать транзакции по заданной строке в описании с использованием регулярных выражений. Поиск регистронезависимый.
+
+```python
+from src.processing import process_bank_search
+
+# Поиск транзакций по слову "Перевод"
+found_transactions = process_bank_search(transactions, "Перевод")
+
+# Поиск работает независимо от регистра
+found_transactions = process_bank_search(transactions, "перевод")  # Найдет "Перевод", "ПЕРЕВОД" и т.д.
+
+# Поиск с специальными символами (автоматически экранируются)
+found_transactions = process_bank_search(transactions, "Перевод (организация)")
+
+# Функция возвращает пустой список, если:
+# - передан пустой список транзакций
+# - строка поиска не найдена ни в одной транзакции
+# - передан пустой поисковый запрос
+```
+
+**Особенности:**
+- Регистронезависимый поиск
+- Автоматическое экранирование специальных символов
+- Логирование всех операций поиска
+- Обработка ошибок с возвратом пустого списка
+
+### Подсчет операций по категориям
+
+Функция `process_bank_operations` подсчитывает количество банковских операций определенного типа на основе поля `description` с использованием `Counter` из библиотеки `collections`.
+
+```python
+from src.processing import process_bank_operations
+
+# Подсчет операций по категориям
+categories = ["Перевод организации", "Открытие вклада", "Перевод со счета на счет"]
+counts = process_bank_operations(transactions, categories)
+
+print(counts)
+# {'Перевод организации': 5, 'Открытие вклада': 2, 'Перевод со счета на счет': 3}
+
+# Если категория не найдена, возвращается 0
+counts = process_bank_operations(transactions, ["Несуществующая категория"])
+print(counts)
+# {'Несуществующая категория': 0}
+```
+
+**Особенности:**
+- Использует `Counter` из `collections` для эффективного подсчета
+- Возвращает словарь с количеством операций для каждой категории
+- Если категория не найдена, возвращает 0
+- Логирование всех операций подсчета
+- Обработка ошибок с возвратом пустого словаря
 
 ## Генераторы для обработки данных
 
