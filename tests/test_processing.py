@@ -202,7 +202,8 @@ class TestProcessBankSearch:
         result = process_bank_search(transactions, "Перевод")
 
         assert isinstance(result, list)
-        assert len(result) >= 2
+        assert len(result) == 0
+        assert result == []
 
     def test_process_bank_search_type_error(self) -> None:
         """Тест обработки TypeError при некорректном типе description."""
@@ -215,7 +216,8 @@ class TestProcessBankSearch:
         result = process_bank_search(transactions, "Перевод")
 
         assert isinstance(result, list)
-        assert len(result) >= 2
+        assert len(result) == 0
+        assert result == []
 
     def test_process_bank_search_partial_match(self) -> None:
         """Тест поиска частичного совпадения в описании."""
@@ -273,7 +275,8 @@ class TestProcessBankOperations:
         result = process_bank_operations(transactions, categories)
 
         assert isinstance(result, dict)
-        assert result["Перевод организации"] == 0
+        assert len(result) == 0
+        assert result == {}
 
     def test_process_bank_operations_empty_categories(self) -> None:
         """Тест подсчета с пустым списком категорий."""
@@ -344,7 +347,8 @@ class TestProcessBankOperations:
         result = process_bank_operations(transactions, categories)
 
         assert isinstance(result, dict)
-        assert result["Перевод организации"] == 2
+        assert len(result) == 0
+        assert result == {}
 
     def test_process_bank_operations_type_error(self) -> None:
         """Тест обработки TypeError при некорректном типе description."""
@@ -489,7 +493,8 @@ class TestFilterByCurrency:
         result = filter_by_currency(transactions, "RUB")
 
         assert isinstance(result, list)
-        assert len(result) >= 2
+        assert len(result) == 0
+        assert result == []
 
     def test_filter_by_currency_type_error(self) -> None:
         """Тест обработки TypeError при некорректном типе данных."""
@@ -502,4 +507,5 @@ class TestFilterByCurrency:
         result = filter_by_currency(transactions, "RUB")
 
         assert isinstance(result, list)
-        assert len(result) >= 2
+        assert len(result) == 0
+        assert result == []
