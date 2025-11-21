@@ -1,6 +1,19 @@
 import logging
 from pathlib import Path
 
+# Константы модуля
+MIN_CARD_LENGTH = 13
+MAX_CARD_LENGTH = 19
+STANDARD_CARD_LENGTH = 16
+DEFAULT_BLOCK_SIZE = 4
+FIRST_VISIBLE_DIGITS = 6
+LAST_VISIBLE_DIGITS = 4
+ENCODING = "utf-8"
+FILE_WRITE_MODE = "w"
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
+ACCOUNT_MASK_PREFIX = "**"
+MIN_ACCOUNT_TAIL_LENGTH = 4
+
 
 def _setup_logger() -> logging.Logger:
     """
@@ -23,13 +36,13 @@ def _setup_logger() -> logging.Logger:
 
     # Создаем обработчик для записи в файл
     log_file = logs_dir / "masks.log"
-    file_handler = logging.FileHandler(log_file, mode="w", encoding="utf-8")
+    file_handler = logging.FileHandler(log_file, mode=FILE_WRITE_MODE, encoding=ENCODING)
     file_handler.setLevel(logging.DEBUG)
 
     # Создаем форматтер
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        datefmt=TIMESTAMP_FORMAT,
     )
     file_handler.setFormatter(formatter)
 
@@ -59,7 +72,7 @@ def only_digits(value: str) -> bool:
     return result
 
 
-def format_in_blocks(text: str, block_size: int = 4) -> str:
+def format_in_blocks(text: str, block_size: int = DEFAULT_BLOCK_SIZE) -> str:
     """
     Возвращает строку, разбитую пробелами на блоки по block_size символов.
 
@@ -103,20 +116,20 @@ def get_mask_card_number(card_number: int | str) -> str:
         raise ValueError("Номер карты должен содержать только цифры")
 
     length = len(card_str)
-    if length < 13 or length > 19:
+    if length < MIN_CARD_LENGTH or length > MAX_CARD_LENGTH:
         logger.error(f"Некорректная длина номера карты: {length}")
-        raise ValueError("Длина номера карты должна быть от 13 до 19 цифр")
+        raise ValueError(f"Длина номера карты должна быть от {MIN_CARD_LENGTH} до {MAX_CARD_LENGTH} цифр")
 
     logger.debug(f"Длина номера карты: {length}")
 
     # Для 16-значного номера фиксированная расстановка пробелов: XXXX XX** **** XXXX
-    if length == 16:
+    if length == STANDARD_CARD_LENGTH:
         masked_number = f"{card_str[:4]} {card_str[4:6]}** **** {card_str[-4:]}"
     else:
         # Для прочих длин: первые 6, звёздочки, последние 4
-        first6 = card_str[:6]
-        last4 = card_str[-4:]
-        middle_len = max(0, length - 10)
+        first6 = card_str[:FIRST_VISIBLE_DIGITS]
+        last4 = card_str[-LAST_VISIBLE_DIGITS:]
+        middle_len = max(0, length - FIRST_VISIBLE_DIGITS - LAST_VISIBLE_DIGITS)
         masked_middle = "*" * middle_len
         masked_raw = f"{first6}{masked_middle}{last4}"
         # Возвращаем строку, разбитую пробелами каждые 4 символа
@@ -146,8 +159,8 @@ def get_mask_account(account_number: int | str) -> str:
         logger.error(f"Номер счета содержит нецифровые символы: {acc_str}")
         raise ValueError("Номер счёта должен содержать только цифры")
 
-    tail = acc_str[-4:] if len(acc_str) >= 4 else acc_str
-    masked_account = f"**{tail}"
+    tail = acc_str[-MIN_ACCOUNT_TAIL_LENGTH:] if len(acc_str) >= MIN_ACCOUNT_TAIL_LENGTH else acc_str
+    masked_account = f"{ACCOUNT_MASK_PREFIX}{tail}"
     logger.info(f"Номер счета успешно замаскирован, длина: {len(acc_str)}")
     # Для маски счёта пробелы не требуются
     return masked_account

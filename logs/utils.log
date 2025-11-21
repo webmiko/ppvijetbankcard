@@ -1,4 +1,20 @@
-2025-11-19 03:19:48 - src.utils - DEBUG - Начало загрузки транзакций из файла: data/operations.json
-2025-11-19 03:19:48 - src.utils - INFO - Успешно загружено транзакций: 101 из файла data/operations.json
-2025-11-19 03:19:48 - src.utils - DEBUG - Начало загрузки транзакций из файла: nonexistent_file.json
-2025-11-19 03:19:48 - src.utils - WARNING - Файл не найден: nonexistent_file.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpk4ewgqix.json
+2025-11-21 23:40:34 - src.utils - INFO - Успешно загружено транзакций: 2 из файла /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpk4ewgqix.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: nonexistent_file.json
+2025-11-21 23:40:34 - src.utils - WARNING - Файл не найден: nonexistent_file.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmppp5751t4.json
+2025-11-21 23:40:34 - src.utils - WARNING - Файл пустой: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmppp5751t4.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmphjk4947a.json
+2025-11-21 23:40:34 - src.utils - WARNING - Файл содержит не список: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmphjk4947a.json, тип: <class 'dict'>
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmp0nhx5c3v.json
+2025-11-21 23:40:34 - src.utils - ERROR - Ошибка при загрузке файла /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmp0nhx5c3v.json: JSONDecodeError - Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: data/operations.json
+2025-11-21 23:40:34 - src.utils - INFO - Успешно загружено транзакций: 101 из файла data/operations.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmp4n5x4pxe.json
+2025-11-21 23:40:34 - src.utils - INFO - Успешно загружено транзакций: 1 из файла /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmp4n5x4pxe.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmppigekdzk.json
+2025-11-21 23:40:34 - src.utils - INFO - Успешно загружено транзакций: 0 из файла /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmppigekdzk.json
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpt92fr7xb.json
+2025-11-21 23:40:34 - src.utils - WARNING - Файл содержит не список: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpt92fr7xb.json, тип: <class 'dict'>
+2025-11-21 23:40:34 - src.utils - DEBUG - Начало загрузки транзакций из файла: /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpu713y9q5.json
+2025-11-21 23:40:34 - src.utils - ERROR - Ошибка при загрузке файла /var/folders/cc/m143n9rx3ns3znrq45dqnv6w0000gn/T/tmpu713y9q5.json: JSONDecodeError - Expecting value: line 1 column 1 (char 0)

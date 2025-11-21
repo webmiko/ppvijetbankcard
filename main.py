@@ -4,6 +4,7 @@ from generators import (
     random_card_number_generator,
     transaction_descriptions,
 )
+from src.csv_loader import load_transactions_from_csv, load_transactions_from_excel
 from src.decorators import log
 from src.external_api import convert_currency_to_rubles
 from src.masks import get_mask_account, get_mask_card_number
@@ -382,8 +383,81 @@ def demo_utils_and_api() -> None:
     print("3. Добавьте в .env: API_KEY_CURRENCY=ваш_ключ")
 
 
+def demo_csv_loader() -> None:
+    """Демонстрация работы функций из модуля csv_loader."""
+
+    print("\n" + "=" * 60)
+    print("Демонстрация функций из csv_loader.py:")
+    print("=" * 60)
+
+    # Демонстрация load_transactions_from_csv
+    print("\nДемонстрация load_transactions_from_csv:")
+    print("\nЗагрузка транзакций из файла data/transactions.csv:")
+
+    csv_transactions = load_transactions_from_csv("data/transactions.csv")
+    print(f"  ✅ Загружено транзакций из CSV: {len(csv_transactions)}")
+
+    if csv_transactions:
+        print("\n  Пример первой транзакции из CSV:")
+        first_tx = csv_transactions[0]
+        print(f"    ID: {first_tx.get('id', 'N/A')}")
+        print(f"    Дата: {first_tx.get('date', 'N/A')}")
+        print(f"    Состояние: {first_tx.get('state', 'N/A')}")
+        print(f"    Описание: {first_tx.get('description', 'N/A')}")
+        if "amount" in first_tx:
+            amount = first_tx.get("amount", "N/A")
+            currency_code = first_tx.get("currency_code", "N/A")
+            print(f"    Сумма: {amount} {currency_code}")
+
+    print("\n  Проверка обработки несуществующего файла:")
+    empty_csv_result = load_transactions_from_csv("nonexistent_file.csv")
+    print(f"    Несуществующий файл → {empty_csv_result} (пустой список)")
+
+    # Демонстрация load_transactions_from_excel
+    print("\n" + "=" * 60)
+    print("Демонстрация load_transactions_from_excel:")
+    print("=" * 60)
+
+    print("\nЗагрузка транзакций из файла data/transactions_excel.xlsx:")
+
+    excel_transactions = load_transactions_from_excel("data/transactions_excel.xlsx")
+    print(f"  ✅ Загружено транзакций из Excel: {len(excel_transactions)}")
+
+    if excel_transactions:
+        print("\n  Пример первой транзакции из Excel:")
+        first_tx = excel_transactions[0]
+        print(f"    ID: {first_tx.get('id', 'N/A')}")
+        print(f"    Дата: {first_tx.get('date', 'N/A')}")
+        print(f"    Состояние: {first_tx.get('state', 'N/A')}")
+        print(f"    Описание: {first_tx.get('description', 'N/A')}")
+        if "amount" in first_tx:
+            amount = first_tx.get("amount", "N/A")
+            currency_code = first_tx.get("currency_code", "N/A")
+            print(f"    Сумма: {amount} {currency_code}")
+
+    print("\n  Проверка обработки несуществующего файла:")
+    empty_excel_result = load_transactions_from_excel("nonexistent_file.xlsx")
+    print(f"    Несуществующий файл → {empty_excel_result} (пустой список)")
+
+    # Сравнение форматов данных
+    print("\n" + "=" * 60)
+    print("Сравнение форматов данных:")
+    print("=" * 60)
+
+    if csv_transactions and excel_transactions:
+        print("\n  Количество транзакций:")
+        print(f"    CSV: {len(csv_transactions)}")
+        print(f"    Excel: {len(excel_transactions)}")
+        print(f"    JSON: {len(load_transactions_from_json('data/operations.json'))}")
+
+        print("\n  Структура данных одинаковая для всех форматов:")
+        if csv_transactions:
+            print(f"    Пример ключей из CSV: {list(csv_transactions[0].keys())[:5]}...")
+
+
 if __name__ == "__main__":
     demo()
     demo_generators()
     demo_log()
     demo_utils_and_api()
+    demo_csv_loader()

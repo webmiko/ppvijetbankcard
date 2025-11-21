@@ -2,6 +2,11 @@ from datetime import datetime
 
 from src.masks import get_mask_account, get_mask_card_number
 
+# Константы модуля
+DATE_FORMAT = "%d.%m.%Y"
+ACCOUNT_PREFIX = "Счет"
+MIN_PARTS_COUNT = 2
+
 
 # проверка на корректность данных
 def mask_account_card(input_string: str) -> str:
@@ -23,15 +28,15 @@ def mask_account_card(input_string: str) -> str:
     # Разделяем строку на части
     card_parts = input_string.split()
 
-    if len(card_parts) < 2:
+    if len(card_parts) < MIN_PARTS_COUNT:
         raise ValueError("Неверный формат входной строки")
 
     # Определяем тип (карта или счет)
-    if card_parts[0] == "Счет":
+    if card_parts[0] == ACCOUNT_PREFIX:
         # Для счета берем все части кроме первой как номер
         account_number = "".join(card_parts[1:])
         masked_number = get_mask_account(account_number)
-        return f"Счет {masked_number}"
+        return f"{ACCOUNT_PREFIX} {masked_number}"
     else:
         # Для карты берем последнюю часть как номер карты
         card_number = card_parts[-1]
@@ -60,6 +65,6 @@ def get_date(date_string: str) -> str:
         # Преобразуем дату из ISO формата
         date_time = datetime.fromisoformat(date_string)
         # Форматируем в нужный формат ДД.ММ.ГГГГ
-        return date_time.strftime("%d.%m.%Y")
+        return date_time.strftime(DATE_FORMAT)
     except ValueError as e:
         raise ValueError(f"Неверный формат даты: {e}")

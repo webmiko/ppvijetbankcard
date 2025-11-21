@@ -3,8 +3,12 @@ from typing import Any, Dict, List
 
 from src.widget import get_date
 
+# Константы модуля
+DEFAULT_STATE = "EXECUTED"
+DATE_FORMAT = "%d.%m.%Y"
 
-def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
+
+def filter_by_state(transactions: List[Dict[str, Any]], state: str = DEFAULT_STATE) -> List[Dict[str, Any]]:
     """
     Фильтрует список словарей по значению ключа 'state'.
 
@@ -34,5 +38,5 @@ def sort_by_date(transactions: List[Dict[str, Any]], is_reverse_order: bool = Tr
     # Явно указываем тип данных для ключа сортировки, чтобы улучшить читаемость
 
     return sorted(
-        transactions, key=lambda tx: datetime.strptime(get_date(tx["date"]), "%d.%m.%Y"), reverse=is_reverse_order
+        transactions, key=lambda tx: datetime.strptime(get_date(tx["date"]), DATE_FORMAT), reverse=is_reverse_order
     )
